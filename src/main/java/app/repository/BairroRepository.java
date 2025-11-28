@@ -13,4 +13,6 @@ public interface BairroRepository extends JpaRepository<Bairro, Long> {
     Optional<Bairro> findByNomeIgnoreCase(String nome);
 
     boolean existsByNomeIgnoreCase(String nome);
+    
+    
 }

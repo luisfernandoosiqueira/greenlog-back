@@ -2,6 +2,8 @@ package app.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,19 +19,28 @@ public class TrechoRota {
     private Rota rota;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "rua_conexao_id", nullable = false)
-    private RuaConexao ruaConexao;
+    @JoinColumn(name = "origem_bairro_id", nullable = false)
+    private Bairro origem;
 
-    @Column(nullable = false)
-    private Integer ordem;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "destino_bairro_id", nullable = false)
+    private Bairro destino;
+
+    @ManyToMany
+    @JoinTable(
+            name = "TB_TRECHO_RUA_CONEXAO",
+            joinColumns = @JoinColumn(name = "trecho_id"),
+            inverseJoinColumns = @JoinColumn(name = "rua_conexao_id")
+    )
+    private List<RuaConexao> ruas = new ArrayList<>();
 
     public TrechoRota() {
     }
 
-    public TrechoRota(Rota rota, RuaConexao ruaConexao, Integer ordem) {
+    public TrechoRota(Rota rota, Bairro origem, Bairro destino) {
         this.rota = rota;
-        this.ruaConexao = ruaConexao;
-        this.ordem = ordem;
+        this.origem = origem;
+        this.destino = destino;
     }
 
     public Long getId() {
@@ -44,20 +55,28 @@ public class TrechoRota {
         this.rota = rota;
     }
 
-    public RuaConexao getRuaConexao() {
-        return ruaConexao;
+    public Bairro getOrigem() {
+        return origem;
     }
 
-    public void setRuaConexao(RuaConexao ruaConexao) {
-        this.ruaConexao = ruaConexao;
+    public void setOrigem(Bairro origem) {
+        this.origem = origem;
     }
 
-    public Integer getOrdem() {
-        return ordem;
+    public Bairro getDestino() {
+        return destino;
     }
 
-    public void setOrdem(Integer ordem) {
-        this.ordem = ordem;
+    public void setDestino(Bairro destino) {
+        this.destino = destino;
+    }
+
+    public List<RuaConexao> getRuas() {
+        return ruas;
+    }
+
+    public void setRuas(List<RuaConexao> ruas) {
+        this.ruas = ruas;
     }
 
     @Override
