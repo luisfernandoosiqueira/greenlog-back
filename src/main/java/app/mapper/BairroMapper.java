@@ -1,13 +1,13 @@
 package app.mapper;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import app.dto.bairro.BairroRequestDTO;
 import app.dto.bairro.BairroResponseDTO;
 import app.dto.pontocoleta.PontoColetaResponseDTO;
-import app.dto.ruaconexao.RuaConexaoResponseDTO;
 import app.entity.Bairro;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class BairroMapper {
@@ -22,9 +22,7 @@ public class BairroMapper {
         return bairro;
     }
 
-    public BairroResponseDTO toResponseDTO(Bairro bairro,
-                                           List<RuaConexaoResponseDTO> ruas,
-                                           List<PontoColetaResponseDTO> pontosColetas) {
+    public BairroResponseDTO toResponseDTO(Bairro bairro, List<PontoColetaResponseDTO> pontosColetas) {
         if (bairro == null) {
             return null;
         }
@@ -32,7 +30,6 @@ public class BairroMapper {
         return new BairroResponseDTO(
                 bairro.getId(),
                 bairro.getNome(),
-                ruas,
                 pontosColetas
         );
     }

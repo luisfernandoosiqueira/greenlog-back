@@ -1,11 +1,12 @@
 package app.dto.rota;
 
+import java.util.List;
+
+import app.dto.ruaconexao.RuaConexaoResponseDTO;
+
 public record TrechoRotaDTO(
-        Long id,
-        Long ruaConexaoId,
-        Long origemId,
-        Long destinoId,
-        Double distanciaKm,
-        Integer ordem
+       
+		List<RuaConexaoResponseDTO> ruas
+		
 ) {
 }

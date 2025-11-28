@@ -18,13 +18,10 @@ public class RuaConexaoMapper {
             return null;
         }
 
-        Long origemId = ruaConexao.getOrigem() != null ? ruaConexao.getOrigem().getId() : null;
-        Long destinoId = ruaConexao.getDestino() != null ? ruaConexao.getDestino().getId() : null;
-
         return new RuaConexaoResponseDTO(
                 ruaConexao.getId(),
-                origemId,
-                destinoId,
+                ruaConexao.getOrigem(),
+                ruaConexao.getDestino(),
                 ruaConexao.getDistanciaKm()
         );
     }

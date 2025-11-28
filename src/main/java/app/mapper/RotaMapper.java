@@ -1,20 +1,29 @@
 package app.mapper;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import app.dto.caminhao.CaminhaoResponseDTO;
+import app.dto.pontocoleta.PontoColetaResponseDTO;
 import app.dto.rota.RotaResponseDTO;
 import app.dto.rota.TrechoRotaDTO;
 import app.entity.Rota;
-import app.entity.TrechoRota;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import app.entity.TipoResiduoModel;
 
 @Component
 public class RotaMapper {
 
     private final TrechoRotaMapper trechoRotaMapper;
+    private final CaminhaoMapper caminhaoMapper;
+    private final PontoColetaMapper pontoColetaMapper;
 
-    public RotaMapper(TrechoRotaMapper trechoRotaMapper) {
+    public RotaMapper(TrechoRotaMapper trechoRotaMapper,
+                      CaminhaoMapper caminhaoMapper,
+                      PontoColetaMapper pontoColetaMapper) {
         this.trechoRotaMapper = trechoRotaMapper;
+        this.caminhaoMapper = caminhaoMapper;
+        this.pontoColetaMapper = pontoColetaMapper;
     }
 
     public RotaResponseDTO toResponseDTO(Rota rota) {
@@ -22,25 +31,38 @@ public class RotaMapper {
             return null;
         }
 
-        Long origemId = rota.getOrigem() != null ? rota.getOrigem().getId() : null;
-        Long destinoId = rota.getDestino() != null ? rota.getDestino().getId() : null;
+        String dataCriacao = rota.getDataCriacao() != null
+                ? rota.getDataCriacao().toString()
+                : null;
 
-        List<TrechoRotaDTO> trechos = rota.getTrechos()
+        CaminhaoResponseDTO caminhaoDTO =
+                caminhaoMapper.toResponseDTO(rota.getCaminhao());
+
+        List<TrechoRotaDTO> trechosDTO = rota.getTrechos()
                 .stream()
                 .map(trechoRotaMapper::toResponseDTO)
                 .toList();
 
+        List<PontoColetaResponseDTO> pontosDTO = rota.getPontosColeta()
+                .stream()
+                .map(pc -> pontoColetaMapper.toResponseDTO(
+                        pc,
+                        pc.getTiposResiduo().stream().toList()
+                ))
+                .toList();
+
+        TipoResiduoModel tipoResiduo = rota.getTipoResiduo();
+
         return new RotaResponseDTO(
                 rota.getId(),
-                origemId,
-                destinoId,
+                rota.getNome(),
+                rota.getPesoTotal(),
+                dataCriacao,
+                tipoResiduo,
+                caminhaoDTO,
                 rota.getDistanciaTotal(),
-                trechos
+                trechosDTO,
+                pontosDTO
         );
-    }
-
-    public void atualizarTrechos(Rota rota, List<TrechoRota> trechos) {
-        rota.getTrechos().clear();
-        rota.getTrechos().addAll(trechos);
     }
 }
