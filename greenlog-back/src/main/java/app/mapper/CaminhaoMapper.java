@@ -1,0 +1,58 @@
+package app.mapper;
+
+import app.dto.caminhao.CaminhaoRequestDTO;
+import app.dto.caminhao.CaminhaoResponseDTO;
+import app.dto.motorista.MotoristaResponseDTO;
+import app.entity.Caminhao;
+import app.entity.Motorista;
+import app.entity.TipoResiduoModel;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+public class CaminhaoMapper {
+
+    private final MotoristaMapper motoristaMapper;
+
+    public CaminhaoMapper(MotoristaMapper motoristaMapper) {
+        this.motoristaMapper = motoristaMapper;
+    }
+
+    public Caminhao toEntity(CaminhaoRequestDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Caminhao caminhao = new Caminhao();
+        caminhao.setPlaca(dto.placa());              // placa vem do DTO
+        caminhao.setStatus(dto.status());
+        caminhao.setCapacidadeKg(dto.capacidadeKg());
+        // motorista e tipos de resíduo são definidos no service
+        return caminhao;
+    }
+
+    public CaminhaoResponseDTO toResponseDTO(Caminhao caminhao) {
+        if (caminhao == null) {
+            return null;
+        }
+
+        Motorista motorista = caminhao.getMotorista();
+        MotoristaResponseDTO motoristaDTO = motorista != null
+                ? motoristaMapper.toResponseDTO(motorista)
+                : null;
+
+        List<Long> tiposIds = caminhao.getTiposResiduo()
+                .stream()
+                .map(TipoResiduoModel::getId)
+                .toList();
+
+        return new CaminhaoResponseDTO(
+                caminhao.getPlaca(),
+                motoristaDTO,
+                caminhao.getCapacidadeKg(),
+                caminhao.getStatus(),
+                tiposIds
+        );
+    }
+}
