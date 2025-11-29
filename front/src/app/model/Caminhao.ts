@@ -5,15 +5,15 @@ import { Residuos } from "./Residuos";
 export interface CaminhaoResponse{
     placa: string,
     motorista: MotoristaResponse,
-    capacidade: number,
+    capacidadeKg: number,
     status: StatusCaminhao
-    tiposResiduo: Residuos[]
+    tiposResiduoIds: Residuos[]
 }
 
 export interface CaminhaoRequest{
     placa: string,
-    motorista: MotoristaResponse,
-    capacidade: number,
+    motoristaCpf: string,
+    capacidadeKg: number,
     status: StatusCaminhao,
-    tiposResiduo: Residuos[]
+    tiposResiduoIds: Residuos[]
 }

@@ -3,6 +3,7 @@ import { BairroSimplesResponse } from '../../model/Bairro';
 import { RuaRequest, RuaResponse } from '../../model/Rua';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { BairroService } from '../../services/bairro.service';
 
 @Component({
   selector: 'app-nova-rua',
@@ -16,23 +17,26 @@ export class NovaRuaComponent implements OnInit {
   @Output() aoSalvar = new EventEmitter<RuaRequest>();
   @Output() aoCancelar = new EventEmitter<void>();
 
-  listaBairro: BairroSimplesResponse[] = [
-    { id: 1, nome: 'Centro' },
-    { id: 2, nome: 'Jardim Primavera' },
-    { id: 3, nome: 'Vila Nova' },
-    { id: 4, nome: 'São Lucas' },
-    { id: 5, nome: 'Alto da Serra' },
-    { id: 6, nome: 'Morada Verde' },
-  ];
+  listaBairros: BairroSimplesResponse[] = [];
 
   form: FormGroup;
 
-  constructor(private fb: FormBuilder){
+  constructor(private fb: FormBuilder, private bairroService: BairroService){
     this.form = this.fb.group({
       origemId: [null, Validators.required],
       destinoId: [null, Validators.required],
       distanciaKm: ['', Validators.required],
     })
+
+    this.bairroService.findAll().subscribe({
+      next: (bairros) => {
+        this.listaBairros = bairros;
+        console.log("Bairros carregados:", bairros);
+      },
+      error: (err) => {
+        console.error("Erro ao carregar bairros", err);
+      }
+    });
   }
 
   ngOnInit(): void {

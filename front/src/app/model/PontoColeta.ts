@@ -11,7 +11,8 @@ export interface PontoColetaResponse{
     endereco: string,
     horaEntrada: string;
     horaSaida: string;
-    tipoResiduo: Residuos[],
+    quantidadeResiduosKg: number,
+    tipoResiduo: Residuos[]
 }
 
 export interface PontoColetaRequest{
@@ -21,7 +22,8 @@ export interface PontoColetaRequest{
     telefone: string,
     email: string,
     endereco: string,
-    horaEntrada: string;
-    horaSaida: string;
-    tipoResiduoId: number[],
+    horaEntrada: string,
+    horaSaida: string,
+    quantidadeResiduosKg: number,
+    tipoResiduoId: number[]
 }

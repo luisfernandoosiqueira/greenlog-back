@@ -7,7 +7,7 @@
                     <label>Bairro Origem*</label>
                     <select formControlName="origemId">
                         <option [value]="null" disabled>Selecione...</option>
-                        <option *ngFor="let bairro of listaBairro" [value]="bairro.id">
+                        <option *ngFor="let bairro of listaBairros" [value]="bairro.id">
                             {{ bairro.nome }}
                         </option>
                     </select>
@@ -17,7 +17,7 @@
                     <label>Bairro Destino*</label>
                     <select formControlName="destinoId">
                         <option [value]="null" disabled>Selecione...</option>
-                        <option *ngFor="let bairro of listaBairro" [value]="bairro.id">
+                        <option *ngFor="let bairro of listaBairros" [value]="bairro.id">
                             {{ bairro.nome }}
                         </option>
                     </select>

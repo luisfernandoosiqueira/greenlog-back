@@ -9,16 +9,16 @@
                 </div>
                 <div class="form-group">
                     <label>Motorista*</label>
-                    <select formControlName="motorista">
+                    <select formControlName="motoristaCpf">
                         <option [ngValue]="null" disabled>Selecione...</option>
-                        <option *ngFor="let m of listaMotorista" [ngValue]="m">{{ m.nome }}</option>
+                        <option *ngFor="let m of listaMotorista" [ngValue]="m.cpf">{{ m.nome }}</option>
                     </select>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group">
-                    <label>Capacidade*</label>
-                    <input type="text" formControlName="capacidade" placeholder="0(kg)" mask="0*">
+                    <label>Capacidade(kg)*</label>
+                    <input type="text" formControlName="capacidadeKg" placeholder="0(kg)" mask="0*">
                 </div>
                 <div class="form-group">
                     <label>Status*</label>
@@ -29,11 +29,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group" *ngFor="let residuo of residuosDisponivel; let i = index">
-                    <input type="checkbox" [formControlName]="i" [id]="'residuo-' + i"/>
-                    <label class="form-check-label" [for]="'residuo-' + i">
-                        {{ residuo.nome }}
-                    </label>
+                <label>SERVIÇOS ADICIONAIS:</label>
+                <div class="box-check" formArrayName="tiposResiduoIds" *ngIf="form.get('tiposResiduoIds')">
+                    <div *ngFor="let residuo of residuosDisponivel; let i = index">
+                        <label>
+                            <input type="checkbox" [formControlName]="i">
+                            {{ residuo }}
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="actions">

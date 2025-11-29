@@ -52,24 +52,18 @@ export class NovoMotoristaComponent implements OnInit {
     return { documentoInvalido: true };
   }
 
-  // NOVO E SIMPLIFICADO VALIDADOR validaData
   validaData(control: AbstractControl): ValidationErrors | null {
-      const dataString = control.value; // Recebe YYYY-MM-DD
-      if (!dataString) return null; // Deixa o Validators.required cuidar da ausência
+      const dataString = control.value;
+      if (!dataString) return null;
 
-      // Cria o objeto Date (o formato YYYY-MM-DD é o melhor para criar Date em JS)
       const dataNascimento = new Date(dataString);
 
-      // Zera as horas para comparar apenas a data (no fuso horário local)
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0); 
       
-      // Compara se a data de nascimento é maior que hoje
       if (dataNascimento.getTime() > hoje.getTime()) {
           return { dataFutura: true };
       }
-      
-      // O navegador já garante a validade do calendário (ex: 30 de fevereiro)
       return null;
   }
 
@@ -83,7 +77,8 @@ export class NovoMotoristaComponent implements OnInit {
 
   salvar() {
     if (this.form.valid){
-      const motoristaSalvo: MotoristaRequest = this.form.value; 
+      this.form.get('cpf')?.enable();
+      const motoristaSalvo: MotoristaRequest = this.form.value;
       this.aoSalvar.emit(motoristaSalvo);
     }
   }

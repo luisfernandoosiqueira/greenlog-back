@@ -5,6 +5,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BairroRequest, BairroResponse } from '../../model/Bairro';
 import { PontoColetaRequest, PontoColetaResponse } from '../../model/PontoColeta';
 import { NovoBairroComponent } from "../novo-bairro/novo-bairro.component";
+import { PontoColetaService } from '../../services/pontoColeta.service';
+import { BairroService } from '../../services/bairro.service';
 
 @Component({
   selector: 'app-box-bairro',
@@ -23,8 +25,9 @@ export class BoxBairroComponent implements OnInit {
   bairroSendoEditado: boolean = false;
   bairroParaAtualizar: BairroResponse | null = null;
 
+  constructor(private pontoColetaService: PontoColetaService, private bairroService: BairroService) {}
+
   ngOnInit(): void {
-    
   }
 
   abrirModalNovoBairro() {
@@ -67,10 +70,45 @@ export class BoxBairroComponent implements OnInit {
     return "";
   }
 
-  salvarPonto(pontoColete: PontoColetaRequest) {
+  salvarPonto(pontoColetaSalvo: PontoColetaRequest) {
+    if(this.pontoSendoEditado){
+      if(this.pontoParaAtualizar?.id == null) throw new Error('O id do ponto de coleta não pode ser nulo ao tentar salvar.');
+      this.pontoColetaService.update(pontoColetaSalvo, this.pontoParaAtualizar.id).subscribe({
+        next: (resposta) => {
+          console.log('Ponto de coleta atualizar com sucesso!' + resposta);
+          this.fecharModalPonto();
+        },
+        error: (erro) => {
+          console.error('Erros ao atualizar um ponto de coleta: ', erro);
+        }
+      })
+    }else{
+      this.pontoColetaService.create(pontoColetaSalvo).subscribe({
+        next: (resposta) => {
+          console.log('Ponto de coleta cadastrado com sucesso!' + resposta);
+          this.fecharModalPonto();
+        },
+        error: (erro) => {
+          console.error('Erros ao cadastrar um ponto de coleta: ', erro);
+        }
+      })
+      this.fecharModalPonto();
+    }
   }
 
-  salvarBairro(bairro: BairroRequest) {
+  salvarBairro(bairroSalvo: BairroRequest) {
+    if(this.bairroSendoEditado){
+      if(this.bairroParaAtualizar?.id == null) throw new Error('O id de bairro não pode ser nulo ao tentar salvar.');
+      this.bairroService.update(bairroSalvo, this.bairroParaAtualizar.id).subscribe({
+        next: (resposta) => {
+          console.log('Bairro atualizar com sucesso!');
+          this.fecharModalBairro();
+        },
+        error: (erro) => {
+          console.error('Erros ao atualizar um bairro: ', erro);
+        }
+      })
+    }
   }
 
 }
