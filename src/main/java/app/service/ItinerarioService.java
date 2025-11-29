@@ -58,7 +58,7 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
             throw new NegocioException("Data inválida. Use o formato yyyy-MM-dd.");
         }
 
-        return itinerarioRepository.findByData(data)
+        return itinerarioRepository.findByDataAgendamento(data)
                 .stream()
                 .map(itinerarioMapper::toResponseDTO)
                 .toList();
@@ -125,7 +125,7 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
 
         LocalDate data = LocalDate.parse(dto.data());
 
-        if (itinerarioRepository.existsByCaminhaoAndData(caminhao, data)) {
+        if (itinerarioRepository.existsByRota_CaminhaoAndDataAgendamento(caminhao, data)) {
             throw new NegocioException("O caminhão já possui itinerário para a data informada.");
         }
     }
@@ -159,7 +159,6 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
 
         Itinerario itinerario = new Itinerario();
         itinerario.setRota(rota);
-        // nomes dos campos seguem o modelo do entity; aqui usamos data de agendamento
         itinerario.setDataAgendamento(data);
         itinerario.setDistanciaTotal(rota.getDistanciaTotal());
         itinerario.setAtivo(true);

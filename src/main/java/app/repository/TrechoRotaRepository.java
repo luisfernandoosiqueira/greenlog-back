@@ -11,5 +11,6 @@ import app.entity.TrechoRota;
 @Repository
 public interface TrechoRotaRepository extends JpaRepository<TrechoRota, Long> {
 
-    List<TrechoRota> findByRotaOrderByOrdemAsc(Rota rota);
+    // Trechos da rota em ordem de criação (ID crescente)
+    List<TrechoRota> findByRotaOrderByIdAsc(Rota rota);
 }

@@ -1,15 +1,17 @@
 package app.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import app.entity.Caminhao;
 import app.enums.StatusCaminhao;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface CaminhaoRepository extends JpaRepository<Caminhao, String> {
+import java.util.List;
+import java.util.Optional;
+
+public interface CaminhaoRepository extends JpaRepository<Caminhao, Long> {
+
+    boolean existsByPlacaIgnoreCase(String placa); // usado no criar
+
+    Optional<Caminhao> findByPlacaIgnoreCase(String placa); // usado no buscar/atualizar/excluir
 
     List<Caminhao> findByStatus(StatusCaminhao status);
 }
