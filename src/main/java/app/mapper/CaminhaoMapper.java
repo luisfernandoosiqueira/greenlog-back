@@ -25,9 +25,10 @@ public class CaminhaoMapper {
         }
 
         Caminhao caminhao = new Caminhao();
+        caminhao.setPlaca(dto.placa());              // placa vem do DTO
         caminhao.setStatus(dto.status());
         caminhao.setCapacidadeKg(dto.capacidadeKg());
-        // placa, motorista e tipos de resíduo serão definidos no service
+        // motorista e tipos de resíduo são definidos no service
         return caminhao;
     }
 

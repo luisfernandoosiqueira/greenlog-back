@@ -37,7 +37,7 @@ public class CaminhaoService {
         this.caminhaoMapper = caminhaoMapper;
     }
 
-    // ========= CONSULTAS =========
+    // ===== CONSULTAS =====
 
     @Transactional(readOnly = true)
     public List<CaminhaoResponseDTO> listarTodos() {
@@ -57,18 +57,19 @@ public class CaminhaoService {
 
     @Transactional(readOnly = true)
     public CaminhaoResponseDTO buscarPorPlaca(String placa) {
-        Caminhao caminhao = caminhaoRepository.findById(placa)
+        Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(placa)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Caminhão não encontrado: " + placa));
         return caminhaoMapper.toResponseDTO(caminhao);
     }
 
-    // ========= CRIAR / ATUALIZAR / EXCLUIR =========
+    // ===== CRIAR / ATUALIZAR / EXCLUIR =====
 
     @Transactional
     public CaminhaoResponseDTO criar(CaminhaoRequestDTO dto) {
         validar(dto);
 
-        if (caminhaoRepository.existsById(dto.placa())) {
+        // Placa única
+        if (caminhaoRepository.existsByPlacaIgnoreCase(dto.placa())) {
             throw new NegocioException("Já existe um caminhão cadastrado com essa placa.");
         }
 
@@ -92,9 +93,10 @@ public class CaminhaoService {
     public CaminhaoResponseDTO atualizar(String placa, CaminhaoRequestDTO dto) {
         validar(dto);
 
-        Caminhao existente = caminhaoRepository.findById(placa)
+        Caminhao existente = caminhaoRepository.findByPlacaIgnoreCase(placa)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Caminhão não encontrado: " + placa));
 
+        // Placa não pode ser alterada
         if (!dto.placa().equalsIgnoreCase(placa)) {
             throw new NegocioException("Não é permitido alterar a placa do caminhão.");
         }
@@ -118,16 +120,14 @@ public class CaminhaoService {
 
     @Transactional
     public void excluir(String placa) {
-        Caminhao caminhao = caminhaoRepository.findById(placa)
+        Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(placa)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Caminhão não encontrado: " + placa));
 
-        // Se futuramente for necessário impedir exclusão
-        // quando houver rota ou itinerário vinculado ao caminhão,
-        // a validação pode ser feita aqui antes do delete.
+        // Se precisar validar vínculo com rotas, fazer aqui
         caminhaoRepository.delete(caminhao);
     }
 
-    // ========= AUXILIAR =========
+    // ===== AUXILIAR =====
 
     private void validar(CaminhaoRequestDTO dto) {
         if (dto == null) {

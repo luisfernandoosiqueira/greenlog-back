@@ -8,15 +8,23 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "TB_CAMINHAO")
+@Table(
+        name = "TB_CAMINHAO",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_CAMINHAO_PLACA", columnNames = "placa")
+        }
+)
 public class Caminhao {
 
     @Id
-    @Column(length = 10)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // id técnico
+    private Long id;
+
+    @Column(nullable = false, length = 10, unique = true) // placa única
     private String placa;
 
     @ManyToOne
-    @JoinColumn(name = "motorista_cpf")
+    @JoinColumn(name = "motorista_cpf", nullable = false)
     private Motorista motorista;
 
     @Column(nullable = false)
@@ -29,7 +37,7 @@ public class Caminhao {
     @ManyToMany
     @JoinTable(
             name = "TB_CAMINHAO_TIPO_RESIDUO",
-            joinColumns = @JoinColumn(name = "caminhao_placa"),
+            joinColumns = @JoinColumn(name = "caminhao_id"),
             inverseJoinColumns = @JoinColumn(name = "tipo_residuo_id")
     )
     private Set<TipoResiduoModel> tiposResiduo = new HashSet<>();
@@ -44,8 +52,16 @@ public class Caminhao {
         this.status = status;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getPlaca() {
         return placa;
+    }
+
+    public void setPlaca(String placa) {
+        this.placa = placa;
     }
 
     public Motorista getMotorista() {
@@ -84,11 +100,11 @@ public class Caminhao {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Caminhao caminhao)) return false;
-        return Objects.equals(placa, caminhao.placa);
+        return Objects.equals(id, caminhao.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(placa);
+        return Objects.hash(id);
     }
 }
