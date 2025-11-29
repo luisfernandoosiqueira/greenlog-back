@@ -1,0 +1,29 @@
+<app-nav-bar/>
+<main>
+    <div class="header-pagina">
+        <a [routerLink]="['/']" class="btn-voltar"><img src="assets/seta.png" alt=""></a>
+        <h1>Itinerário</h1>
+    </div>
+    <div class="header-pesquisa">
+        <div class="box-select">
+            <label>Selecione uma data:</label>
+            <input type="date" formControlName="data">
+        </div> 
+        <div class="box-btn">
+            <button class="btn-pesquisar">Pesquisar</button>
+            <button class="btn-novo">Novo Itinerário</button>
+        </div>
+    </div>
+    <div class="container-itinerario" *ngIf="listaItinerarioData.length === 0">
+        <app-box-itinerario>
+
+        </app-box-itinerario>
+        
+    </div>
+    <div class="container-itinerario" *ngFor="let itinerario of listaItinerarioData; let i = index">
+        <app-box-itinerario>
+            <span>Nenhum itinerário cadastrado para essa data.</span>
+        </app-box-itinerario>
+    </div>
+</main>
+<app-footer/>

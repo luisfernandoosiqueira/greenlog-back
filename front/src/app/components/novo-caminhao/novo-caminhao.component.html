@@ -1,0 +1,45 @@
+<div class="modal-backdrop">
+    <div class="modal">
+        <h2>{{ caminhaoParaEditar ? 'Editar Caminhão' : 'Novo Caminhão' }}</h2>
+        <form [formGroup]="form" (ngSubmit)="salvar()">
+             <div class="row">
+                <div class="form-group">
+                    <label>Placa*</label>
+                    <input type="text" mask="AAA0A00" formControlName="placa" placeholder="AAA0A00">
+                </div>
+                <div class="form-group">
+                    <label>Motorista*</label>
+                    <select formControlName="motorista">
+                        <option [ngValue]="null" disabled>Selecione...</option>
+                        <option *ngFor="let m of listaMotorista" [ngValue]="m">{{ m.nome }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Capacidade*</label>
+                    <input type="text" formControlName="capacidade" placeholder="0(kg)" mask="0*">
+                </div>
+                <div class="form-group">
+                    <label>Status*</label>
+                    <select formControlName="status">
+                        <option [value]="null" disabled>Selecione...</option>
+                        <option *ngFor="let status of statusDisponiveis" [value]="status">{{ status }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" *ngFor="let residuo of residuosDisponivel; let i = index">
+                    <input type="checkbox" [formControlName]="i" [id]="'residuo-' + i"/>
+                    <label class="form-check-label" [for]="'residuo-' + i">
+                        {{ residuo.nome }}
+                    </label>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="button" (click)="cancelar()" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-save" [disabled]="form.invalid">{{ caminhaoParaEditar ? 'Atualizar' : 'Salvar' }}</button>
+            </div>
+        </form>
+    </div>
+</div>
