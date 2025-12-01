@@ -1,7 +1,9 @@
+import { BairroResponse } from "./Bairro"
+
 export interface RuaResponse{
     id: number,
-    origemId: number,
-    destinoId: number,
+    origem: BairroResponse,
+    destino: BairroResponse,
     distanciaKm: number
 }
 

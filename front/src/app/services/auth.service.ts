@@ -7,7 +7,7 @@ import { Observable } from "rxjs";
 })
 
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/auth'; // Altere se sua porta for diferente
+  private baseUrl = 'http://localhost:8080/api/auth'; // Altere se sua porta for diferente
 
   constructor(private http: HttpClient) {}
 

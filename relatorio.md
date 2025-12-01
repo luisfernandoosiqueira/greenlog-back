@@ -4,7 +4,7 @@
 O campo CPF não está sendo validado ao ser cadastrado, apenas cpf valido deve ser aceito.
 
 **Onde:**
-* **Endpoint:** `POST /api/v1/motorista`
+* **Endpoint:** `POST /api/motorista`
 * **URL Afetada:** `http://localhost:4200/motorista`
 
 # 🐞 BUG-002: /api/v1/caminhoes - Lista de Residuos.
@@ -22,7 +22,7 @@ Estou recebendo essa messagem de erro.
 }
 
 **Onde:**
-* **Endpoint:** `POST /api/v1/caminhoes`
+* **Endpoint:** `POST /api/caminhoes`
 * **URL Afetada:** `http://localhost:4200/caminhao`
 
 # 🐞 BUG-003: /api/v1/ponto-de-coelta - Cadastro de Ponto de Coleta.
@@ -46,5 +46,5 @@ export interface PontoColetaRequest{
 }
 
 **Onde:**
-* **Endpoint:** `POST /api/v1/caminhoes`
+* **Endpoint:** `POST /api/bairro`
 * **URL Afetada:** `http://localhost:4200/caminhao`

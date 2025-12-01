@@ -30,6 +30,7 @@ export class NovoPontoComponent implements OnInit {
       endereco: ['', [Validators.required, Validators.minLength(3)]],
       horaEntrada: ['', [Validators.required]],
       horaSaida: ['', [Validators.required]],
+      quantidadeResiduosKg: ['', [Validators.required]],
       tiposResiduoIds: this.fb.array([])
     })
 
@@ -54,6 +55,7 @@ export class NovoPontoComponent implements OnInit {
             email: this.pontoParaEditar.email,
             horaEntrada: this.pontoParaEditar.horaEntrada,
             horaSaida: this.pontoParaEditar.horaSaida,
+            quantidadeResiduosKg: this.pontoParaEditar.quantidadeResiduosKg
           });
 
           (this.pontoParaEditar.tipoResiduo || []).forEach(residuo => {

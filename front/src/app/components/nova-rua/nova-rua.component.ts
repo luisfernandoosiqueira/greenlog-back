@@ -4,6 +4,7 @@ import { RuaRequest, RuaResponse } from '../../model/Rua';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BairroService } from '../../services/bairro.service';
+import { ConexaoService } from '../../services/conexao.service';
 
 @Component({
   selector: 'app-nova-rua',
@@ -42,8 +43,8 @@ export class NovaRuaComponent implements OnInit {
   ngOnInit(): void {
     if (this.ruaParaEditar) {
       this.form.patchValue({
-        origemId: this.ruaParaEditar.origemId,
-        destinoId: this.ruaParaEditar.destinoId,
+        origemId: this.ruaParaEditar.origem.id,
+        destinoId: this.ruaParaEditar.destino.id,
         distanciaKm: this.ruaParaEditar.distanciaKm,
       });
     }
@@ -51,8 +52,7 @@ export class NovaRuaComponent implements OnInit {
 
   salvar() {
     if (this.form.valid){
-      const ruaSalvo: RuaRequest = this.form.value; 
-      console.log(ruaSalvo.origemId + " - " + ruaSalvo.destinoId + " - " + ruaSalvo.distanciaKm);
+      const ruaSalvo: RuaRequest = this.form.value;
       this.aoSalvar.emit(ruaSalvo);
     }
   }
