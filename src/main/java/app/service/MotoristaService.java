@@ -117,6 +117,12 @@ public class MotoristaService {
         if (dto.cpf() == null || dto.cpf().isBlank()) {
             throw new NegocioException("O CPF é obrigatório.");
         }
+
+        // NOVO: valida CPF usando os dígitos verificadores
+        if (!validarCPF(dto.cpf())) {
+            throw new NegocioException("O CPF informado é inválido.");
+        }
+
         if (dto.nome() == null || dto.nome().isBlank()) {
             throw new NegocioException("O nome é obrigatório.");
         }
@@ -130,4 +136,62 @@ public class MotoristaService {
             throw new NegocioException("O status é obrigatório.");
         }
     }
+
+    // ========= VALIDAÇÃO DE CPF =========
+
+    private static boolean validarCPF(String cpf) {
+        if (cpf == null) {
+            return false;
+        }
+
+        // Remove qualquer caractere que não seja dígito (permite CPF com máscara 000.000.000-00)
+        cpf = cpf.replaceAll("\\D", "");
+
+        // CPF precisa ter exatamente 11 dígitos
+        if (cpf.length() != 11) {
+            return false;
+        }
+
+        // Rejeita CPFs com todos os dígitos iguais (ex.: 00000000000, 11111111111, etc.)
+        boolean todosIguais = true;
+        for (int i = 1; i < cpf.length(); i++) {
+            if (cpf.charAt(i) != cpf.charAt(0)) {
+                todosIguais = false;
+                break;
+            }
+        }
+        if (todosIguais) {
+            return false;
+        }
+
+        int[] numbers = new int[11];
+        for (int i = 0; i < 11; i++) {
+            numbers[i] = Character.getNumericValue(cpf.charAt(i));
+        }
+
+        int sum = 0;
+        int firstDigit, secondDigit;
+
+        // Cálculo do primeiro dígito verificador
+        for (int i = 0, weight = 10; i < 9; i++, weight--) {
+            sum += numbers[i] * weight;
+        }
+        firstDigit = 11 - (sum % 11);
+        if (firstDigit > 9) {
+            firstDigit = 0;
+        }
+
+        // Cálculo do segundo dígito verificador
+        sum = 0;
+        for (int i = 0, weight = 11; i < 10; i++, weight--) {
+            sum += numbers[i] * weight;
+        }
+        secondDigit = 11 - (sum % 11);
+        if (secondDigit > 9) {
+            secondDigit = 0;
+        }
+
+        return firstDigit == numbers[9] && secondDigit == numbers[10];
+    }
+
 }
