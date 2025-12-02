@@ -1,5 +1,6 @@
 package app.entity;
 
+import app.enums.TipoResiduo;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,9 +21,9 @@ public class Rota {
     @Column(nullable = false, length = 120)
     private String nome;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "tipo_residuo_id", nullable = false)
-    private TipoResiduoModel tipoResiduo;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_residuo", nullable = false, length = 20)
+    private TipoResiduo tipoResiduo;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "caminhao_placa", nullable = false)
@@ -32,10 +33,10 @@ public class Rota {
     private LocalDateTime dataCriacao;
 
     @Column(nullable = false)
-    private Double pesoTotal; // em kg
+    private Double pesoTotal;
 
     @Column(nullable = false)
-    private Double distanciaTotal; // em km
+    private Double distanciaTotal;
 
     @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TrechoRota> trechos = new ArrayList<>();
@@ -52,7 +53,7 @@ public class Rota {
     }
 
     public Rota(String nome,
-                TipoResiduoModel tipoResiduo,
+                TipoResiduo tipoResiduo,
                 Caminhao caminhao,
                 LocalDateTime dataCriacao,
                 Double pesoTotal,
@@ -77,11 +78,11 @@ public class Rota {
         this.nome = nome;
     }
 
-    public TipoResiduoModel getTipoResiduo() {
+    public TipoResiduo getTipoResiduo() {
         return tipoResiduo;
     }
 
-    public void setTipoResiduo(TipoResiduoModel tipoResiduo) {
+    public void setTipoResiduo(TipoResiduo tipoResiduo) {
         this.tipoResiduo = tipoResiduo;
     }
 

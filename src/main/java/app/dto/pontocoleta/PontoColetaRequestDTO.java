@@ -1,5 +1,6 @@
 package app.dto.pontocoleta;
 
+import app.enums.TipoResiduo;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
@@ -26,11 +27,14 @@ public record PontoColetaRequestDTO(
         @Size(max = 200, message = "O endereço deve ter no máximo 200 caracteres")
         String endereco,
 
-        @Size(max = 60, message = "O horário de funcionamento deve ter no máximo 60 caracteres")
-        String horarioFuncionamento,
+        @Size(max = 5, message = "A hora de entrada deve ter no máximo 5 caracteres")
+        String horaEntrada,
+
+        @Size(max = 5, message = "A hora de saída deve ter no máximo 5 caracteres")
+        String horaSaida,
 
         @NotEmpty(message = "Informe pelo menos um tipo de resíduo")
-        List<@NotNull(message = "O id do tipo de resíduo é obrigatório") Long> tiposResiduoIds,
+        List<@NotNull(message = "O tipo de resíduo é obrigatório") TipoResiduo> tiposResiduos,
 
         @NotNull(message = "A quantidade de resíduos é obrigatória")
         @PositiveOrZero(message = "A quantidade de resíduos não pode ser negativa")

@@ -5,6 +5,7 @@ import app.dto.itinerario.ItinerarioResponseDTO;
 import app.entity.Caminhao;
 import app.entity.Itinerario;
 import app.entity.Rota;
+import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
 import app.mapper.ItinerarioMapper;
@@ -58,7 +59,62 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
             throw new NegocioException("Data inválida. Use o formato yyyy-MM-dd.");
         }
 
-        return itinerarioRepository.findByDataAgendamento(data)
+        return itinerarioRepository.findByDataAgendamentoBetween(data, data)
+                .stream()
+                .map(itinerarioMapper::toResponseDTO)
+                .toList();
+    }
+
+    // listar todos os itinerários de um caminhão pela placa
+    @Transactional(readOnly = true)
+    public List<ItinerarioResponseDTO> listarPorCaminhao(String placa) {
+        if (placa == null || placa.isBlank()) {
+            throw new NegocioException("A placa do caminhão é obrigatória.");
+        }
+
+        return itinerarioRepository.findByRota_Caminhao_Placa(placa)
+                .stream()
+                .map(itinerarioMapper::toResponseDTO)
+                .toList();
+    }
+
+    // listar por caminhão + intervalo de datas
+    @Transactional(readOnly = true)
+    public List<ItinerarioResponseDTO> listarPorCaminhaoEPeriodo(String placa,
+                                                                 String inicioTexto,
+                                                                 String fimTexto) {
+        if (placa == null || placa.isBlank()) {
+            throw new NegocioException("A placa do caminhão é obrigatória.");
+        }
+        if (inicioTexto == null || inicioTexto.isBlank()
+                || fimTexto == null || fimTexto.isBlank()) {
+            throw new NegocioException("As datas de início e fim são obrigatórias.");
+        }
+
+        LocalDate inicio;
+        LocalDate fim;
+        try {
+            inicio = LocalDate.parse(inicioTexto);
+            fim = LocalDate.parse(fimTexto);
+        } catch (Exception e) {
+            throw new NegocioException("Datas inválidas. Use o formato yyyy-MM-dd.");
+        }
+
+        return itinerarioRepository
+                .findByRota_Caminhao_PlacaAndDataAgendamentoBetween(placa, inicio, fim)
+                .stream()
+                .map(itinerarioMapper::toResponseDTO)
+                .toList();
+    }
+
+    // listar por tipo de resíduo da rota
+    @Transactional(readOnly = true)
+    public List<ItinerarioResponseDTO> listarPorTipoResiduo(TipoResiduo tipoResiduo) {
+        if (tipoResiduo == null) {
+            throw new NegocioException("O tipo de resíduo é obrigatório.");
+        }
+
+        return itinerarioRepository.findByTipoResiduo(tipoResiduo)
                 .stream()
                 .map(itinerarioMapper::toResponseDTO)
                 .toList();
@@ -75,7 +131,7 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
 
     @Transactional
     public ItinerarioResponseDTO criar(ItinerarioRequestDTO dto) {
-        Itinerario itinerario = criarItinerario(dto); // método template da classe abstrata
+        Itinerario itinerario = criarItinerario(dto);
         return itinerarioMapper.toResponseDTO(itinerario);
     }
 
@@ -125,7 +181,7 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
 
         LocalDate data = LocalDate.parse(dto.data());
 
-        if (itinerarioRepository.existsByRota_CaminhaoAndDataAgendamento(caminhao, data)) {
+        if (itinerarioRepository.existsByCaminhaoAndData(caminhao.getPlaca(), data)) {
             throw new NegocioException("O caminhão já possui itinerário para a data informada.");
         }
     }
@@ -145,8 +201,7 @@ public class ItinerarioService extends AbstractItinerarioTemplate {
 
     @Override
     protected void montarRota(ItinerarioRequestDTO dto) {
-        // Nesta aplicação a rota já está persistida e completa.
-        // Este passo fica reservado para ajustes futuros, se necessário.
+        // Rota já está montada e persistida.
     }
 
     @Override

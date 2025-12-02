@@ -7,7 +7,7 @@ import app.entity.PontoColeta;
 import app.entity.Rota;
 import app.entity.RuaConexao;
 import app.entity.TrechoRota;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
 import app.mapper.RotaMapper;
@@ -16,7 +16,6 @@ import app.repository.CaminhaoRepository;
 import app.repository.ItinerarioRepository;
 import app.repository.PontoColetaRepository;
 import app.repository.RotaRepository;
-import app.repository.TipoResiduoModelRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,6 @@ public class RotaService {
 
     private final RotaRepository rotaRepository;
     private final PontoColetaRepository pontoColetaRepository;
-    private final TipoResiduoModelRepository tipoResiduoModelRepository;
     private final CaminhaoRepository caminhaoRepository;
     private final DijkstraService dijkstraService;
     private final GrafoService grafoService;
@@ -40,7 +38,6 @@ public class RotaService {
 
     public RotaService(RotaRepository rotaRepository,
                        PontoColetaRepository pontoColetaRepository,
-                       TipoResiduoModelRepository tipoResiduoModelRepository,
                        CaminhaoRepository caminhaoRepository,
                        DijkstraService dijkstraService,
                        GrafoService grafoService,
@@ -48,7 +45,6 @@ public class RotaService {
                        ItinerarioRepository itinerarioRepository) {
         this.rotaRepository = rotaRepository;
         this.pontoColetaRepository = pontoColetaRepository;
-        this.tipoResiduoModelRepository = tipoResiduoModelRepository;
         this.caminhaoRepository = caminhaoRepository;
         this.dijkstraService = dijkstraService;
         this.grafoService = grafoService;
@@ -79,12 +75,10 @@ public class RotaService {
     public RotaResponseDTO criar(RotaRequestDTO dto) {
         validar(dto);
 
-        // Busca caminhão pela placa
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
 
-        TipoResiduoModel tipoResiduo = tipoResiduoModelRepository.findById(dto.tipoResiduoId())
-                .orElseThrow(() -> new NegocioException("Tipo de resíduo não encontrado."));
+        TipoResiduo tipoResiduo = dto.tipoResiduo();
 
         List<PontoColeta> pontos = carregarPontosNaOrdem(dto.pontosColetaIds());
 
@@ -122,12 +116,10 @@ public class RotaService {
 
         validar(dto);
 
-        // Busca caminhão pela placa
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
 
-        TipoResiduoModel tipoResiduo = tipoResiduoModelRepository.findById(dto.tipoResiduoId())
-                .orElseThrow(() -> new NegocioException("Tipo de resíduo não encontrado."));
+        TipoResiduo tipoResiduo = dto.tipoResiduo();
 
         List<PontoColeta> pontos = carregarPontosNaOrdem(dto.pontosColetaIds());
 
@@ -192,7 +184,7 @@ public class RotaService {
         if (dto.caminhaoPlaca() == null || dto.caminhaoPlaca().isBlank()) {
             throw new NegocioException("A placa do caminhão é obrigatória.");
         }
-        if (dto.tipoResiduoId() == null) {
+        if (dto.tipoResiduo() == null) {
             throw new NegocioException("O tipo de resíduo é obrigatório.");
         }
         if (dto.pontosColetaIds() == null || dto.pontosColetaIds().isEmpty()) {
@@ -224,7 +216,7 @@ public class RotaService {
     }
 
     private void validarCompatibilidadeTipoResiduo(Caminhao caminhao,
-                                                   TipoResiduoModel tipoResiduo,
+                                                   TipoResiduo tipoResiduo,
                                                    List<PontoColeta> pontos) {
 
         if (!caminhao.getTiposResiduo().contains(tipoResiduo)) {

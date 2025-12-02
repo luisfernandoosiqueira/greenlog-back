@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.itinerario.ItinerarioRequestDTO;
 import app.dto.itinerario.ItinerarioResponseDTO;
+import app.enums.TipoResiduo;
 import app.service.ItinerarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,32 @@ public class ItinerarioController {
             return ResponseEntity.ok(itinerarioService.listarPorData(data));
         }
         return ResponseEntity.ok(itinerarioService.listarTodos());
+    }
+
+    // GET /api/itinerarios/por-caminhao?placa=ABC1234
+    @GetMapping("/por-caminhao")
+    public ResponseEntity<List<ItinerarioResponseDTO>> listarPorCaminhao(
+            @RequestParam("placa") String placa
+    ) {
+        return ResponseEntity.ok(itinerarioService.listarPorCaminhao(placa));
+    }
+
+    // GET /api/itinerarios/por-caminhao-periodo?placa=ABC1234&inicio=2025-01-01&fim=2025-01-31
+    @GetMapping("/por-caminhao-periodo")
+    public ResponseEntity<List<ItinerarioResponseDTO>> listarPorCaminhaoEPeriodo(
+            @RequestParam("placa") String placa,
+            @RequestParam("inicio") String inicio,
+            @RequestParam("fim") String fim
+    ) {
+        return ResponseEntity.ok(itinerarioService.listarPorCaminhaoEPeriodo(placa, inicio, fim));
+    }
+
+    // GET /api/itinerarios/por-tipo-residuo?tipo=PAPEL
+    @GetMapping("/por-tipo-residuo")
+    public ResponseEntity<List<ItinerarioResponseDTO>> listarPorTipoResiduo(
+            @RequestParam("tipo") TipoResiduo tipo
+    ) {
+        return ResponseEntity.ok(itinerarioService.listarPorTipoResiduo(tipo));
     }
 
     // GET /api/itinerarios/{id}
