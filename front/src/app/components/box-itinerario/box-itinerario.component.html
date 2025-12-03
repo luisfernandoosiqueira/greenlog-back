@@ -41,16 +41,26 @@
             <h3>ROTA</h3>
         </div>
     </div>
-    <div class="container-rotas" *ngFor="let rota of itinerario?.rota?.trechos">
-        <div class="row-rota" *ngFor="let trecho of rota.ruas">
-            <span class="bairro-origem">{{trecho.origem}}</span>
-            <div class="seta">
-                <div class="line-wrapper">
-                    <p class="line-label">{{trecho.distanciaKm}} km</p>
-                    <div class="line-seta"></div>
+    <div class="container-rotas" *ngFor="let trecho of itinerario?.rota?.trechos">
+        
+        <div class="row-rota">
+            
+            <!-- Origem da PRIMEIRA rua -->
+            <span class="bairro-origem">{{ trecho.ruas[0].origem.nome }}</span>
+
+            <!-- Loop nas ruas para mostrar seta + distancia + destino -->
+            <ng-container *ngFor="let rua of trecho.ruas">
+                <div class="seta">
+                    <div class="line-wrapper">
+                        <p class="line-label">{{ rua.distanciaKm }} km</p>
+                        <div class="line-seta"></div>
+                    </div>
                 </div>
-            </div>
-            <span class="bairro-destino">{{trecho.destino}}</span>
+
+                <span class="bairro-destino">{{ rua.destino.nome }}</span>
+            </ng-container>
+
         </div>
+
     </div>
 </section>

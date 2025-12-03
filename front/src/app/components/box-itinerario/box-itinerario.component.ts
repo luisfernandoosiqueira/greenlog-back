@@ -10,4 +10,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class BoxItinerarioComponent {
   @Input() itinerario: ItinerarioResponse | null = null;
+
+  get todasAsRuas() {
+    return this.itinerario?.rota?.trechos
+      ?.flatMap(t => t.ruas) || [];
+  }
+
 }

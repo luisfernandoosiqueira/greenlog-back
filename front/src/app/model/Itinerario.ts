@@ -9,5 +9,6 @@ export interface ItinerarioResponse{
 }
 
 export interface ItinerarioRequest{
-    
+    rotaId: number,
+    data: string
 }
