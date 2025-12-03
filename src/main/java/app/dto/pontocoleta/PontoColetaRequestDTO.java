@@ -18,6 +18,10 @@ public record PontoColetaRequestDTO(
         String responsavel,
 
         @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
+        @Pattern(
+                regexp = "^(?:$|(?:\\(\\d{2}\\)\\s?\\d{4,5}-?\\d{4}|\\d{2}\\d{4,5}\\d{4}))$",
+                message = "Telefone inválido"
+        )
         String telefone,
 
         @Email(message = "E-mail inválido")
@@ -28,9 +32,17 @@ public record PontoColetaRequestDTO(
         String endereco,
 
         @Size(max = 5, message = "A hora de entrada deve ter no máximo 5 caracteres")
+        @Pattern(
+                regexp = "^(|(?:[01]\\d|2[0-3]):[0-5]\\d)$",
+                message = "A hora de entrada deve estar no formato HH:mm"
+        )
         String horaEntrada,
 
         @Size(max = 5, message = "A hora de saída deve ter no máximo 5 caracteres")
+        @Pattern(
+                regexp = "^(|(?:[01]\\d|2[0-3]):[0-5]\\d)$",
+                message = "A hora de saída deve estar no formato HH:mm"
+        )
         String horaSaida,
 
         @NotEmpty(message = "Informe pelo menos um tipo de resíduo")

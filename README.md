@@ -97,7 +97,7 @@ src/
 * Factory Method → criação de rotas e trechos de rota a partir dos resultados do cálculo
 * Template Method → fluxo padronizado para criação de itinerários (validações, montagem da rota, persistência)
 * Observer → eventos de domínio (atualização do grafo, criação de itinerário) tratados por listeners dedicados
-* Singleton (via bean Spring) → serviços de grafo reutilizados para o cálculo de rotas em toda a aplicação
+* Singleton → serviços de grafo reutilizados para o cálculo de rotas em toda a aplicação
 
 ```
 ```
