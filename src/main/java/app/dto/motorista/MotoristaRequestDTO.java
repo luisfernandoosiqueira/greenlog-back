@@ -30,10 +30,10 @@ public record MotoristaRequestDTO(
         @NotBlank(message = "O telefone é obrigatório")
         @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
         @Pattern(
-                regexp = "^(\\(\\d{2}\\)\\s?)?\\d{4,5}-?\\d{4}$",
-                message = "Telefone inválido"
-        )
-        String telefone,
+        	    regexp = "^(?:\\(\\d{2}\\)\\s?\\d{4,5}-?\\d{4}|\\d{2}\\d{4,5}\\d{4})$",
+        	    message = "Telefone inválido"
+        	)
+        	String telefone,
 
         @NotNull(message = "O status é obrigatório")
         StatusMotorista status
