@@ -1,4 +1,3 @@
-import { Residuos } from "./Residuos";
 import { RotaResponse } from "./Rota";
 
 export interface ItinerarioResponse{

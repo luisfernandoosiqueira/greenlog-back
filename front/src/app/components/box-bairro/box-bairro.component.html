@@ -15,7 +15,7 @@
             </div>
             <div class="coluna">
                 <label>Resíduos:</label>
-                <span>{{getTiposResiduos()}}</span>
+                <span>{{getTiposResiduos(ponto)}}</span>
             </div>
             <div class="coluna">
                 <label>Responsável:</label>
@@ -41,6 +41,7 @@
 
 <div *ngIf="exibirModalPonto">
     <app-novo-ponto
+        [bairroId]="bairro!.id"
         [pontoParaEditar]="pontoParaAtualizar"
         (aoSalvar)="salvarPonto($event); fecharModalPonto()" 
         (aoCancelar)="fecharModalPonto()">

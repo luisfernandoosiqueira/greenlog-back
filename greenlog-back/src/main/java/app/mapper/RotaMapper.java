@@ -9,7 +9,7 @@ import app.dto.pontocoleta.PontoColetaResponseDTO;
 import app.dto.rota.RotaResponseDTO;
 import app.dto.rota.TrechoRotaDTO;
 import app.entity.Rota;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
 
 @Component
 public class RotaMapper {
@@ -45,13 +45,10 @@ public class RotaMapper {
 
         List<PontoColetaResponseDTO> pontosDTO = rota.getPontosColeta()
                 .stream()
-                .map(pc -> pontoColetaMapper.toResponseDTO(
-                        pc,
-                        pc.getTiposResiduo().stream().toList()
-                ))
+                .map(pontoColetaMapper::toResponseDTO)
                 .toList();
 
-        TipoResiduoModel tipoResiduo = rota.getTipoResiduo();
+        TipoResiduo tipoResiduo = rota.getTipoResiduo();
 
         return new RotaResponseDTO(
                 rota.getId(),

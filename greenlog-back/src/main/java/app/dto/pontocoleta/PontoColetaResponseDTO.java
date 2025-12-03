@@ -1,8 +1,8 @@
 package app.dto.pontocoleta;
 
-import java.util.List;
+import app.enums.TipoResiduo;
 
-import app.entity.TipoResiduoModel;
+import java.util.List;
 
 public record PontoColetaResponseDTO(
         Long id,
@@ -12,8 +12,9 @@ public record PontoColetaResponseDTO(
         String telefone,
         String email,
         String endereco,
-        String horarioFuncionamento,
+        String horaEntrada,
+        String horaSaida,
         Integer quantidadeResiduosKg,
-        List<TipoResiduoModel> tiposResiduos
+        List<TipoResiduo> tiposResiduos
 ) {
 }

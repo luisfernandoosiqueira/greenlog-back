@@ -1,17 +1,17 @@
 package app.dto.rota;
 
-import java.util.List;
-
 import app.dto.caminhao.CaminhaoResponseDTO;
 import app.dto.pontocoleta.PontoColetaResponseDTO;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
+
+import java.util.List;
 
 public record RotaResponseDTO(
         Long id,
         String nome,
         Double pesoTotal,
         String dataCriacao,
-        TipoResiduoModel tipoResiduo,
+        TipoResiduo tipoResiduo,
         CaminhaoResponseDTO caminhao,
         Double distanciaTotal,
         List<TrechoRotaDTO> trechos,

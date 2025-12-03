@@ -3,8 +3,10 @@ import { RotaRequest, RotaResponse } from '../../model/Rota';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CaminhaoResponse } from '../../model/Caminhao';
 import { PontoColetaResponse } from '../../model/PontoColeta';
-import { Residuos } from '../../model/Residuos';
 import { CommonModule } from '@angular/common';
+import { CaminhaoService } from '../../services/caminhao.service';
+import { TipoResiduo } from '../../model/enums/TipoResiduo';
+import { PontoColetaService } from '../../services/pontoColeta.service';
 
 @Component({
   selector: 'app-nova-rota',
@@ -19,20 +21,42 @@ export class NovaRotaComponent implements OnInit {
   @Output() aoCancelar = new EventEmitter<void>();
 
   caminhoesDisponiveis: CaminhaoResponse[] = [];
-  residuosDisponiveis: Residuos[] = [];
+  tiposResiduosEnum = Object.keys(TipoResiduo);
   pontosDisponiveis: PontoColetaResponse[] = [];
 
   form: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private caminhaoService: CaminhaoService, private pontoColetaService: PontoColetaService) {
     this.form = this.fb.group({
       nome: ['', [Validators.required]],
       caminhaoPlaca: ['', Validators.required],
-      tipoResiduoId: ['', Validators.required],
+      tipoResiduo: ['', Validators.required],
 
       ponto1: ['', Validators.required],
-      ponto2: ['', Validators.required],
-      ponto3: ['', Validators.required],
+      ponto2: [''],
+      ponto3: [''],
+    });
+
+    caminhaoService.findAll().subscribe({
+      next: (caminhao) => {
+        this.caminhoesDisponiveis = caminhao;
+        console.log("Caminhões carregados:", caminhao);
+      },
+      error: (err) => {
+        console.error("Erro ao carregar caminhão", err);
+        alert("Erro ao carregar registros.");
+      }
+    });
+
+    pontoColetaService.findAll().subscribe({
+      next: (pontos) => {
+        this.pontosDisponiveis = pontos;
+        console.log("Pontos carregados:", pontos);
+      },
+      error: (err) => {
+        console.error("Erro ao carregar pontos", err);
+        alert("Erro ao carregar registros.");
+      }
     });
   }
 
@@ -41,7 +65,7 @@ export class NovaRotaComponent implements OnInit {
       this.form.patchValue({
         nome: this.rotaParaEditar.nome,
         caminhaoPlaca: this.rotaParaEditar.caminhao.placa,
-        tipoResiduoId: this.rotaParaEditar.tipoResiduo.id,
+        tipoResiduo: this.rotaParaEditar.tipoResiduo,
       });
 
       // Preenche pontos se existir
@@ -58,15 +82,17 @@ export class NovaRotaComponent implements OnInit {
   salvar() {
     if (this.form.invalid) return;
 
+    const pontosIds = [
+      this.form.value.ponto1,
+      this.form.value.ponto2,
+      this.form.value.ponto3
+    ].filter(id => id); // remove valores vazios/null
+
     const rota: RotaRequest = {
       nome: this.form.value.nome,
       caminhaoPlaca: this.form.value.caminhaoPlaca,
-      tipoResiduoId: this.form.value.tipoResiduoId,
-      pontosColetaIds: [
-        this.form.value.ponto1,
-        this.form.value.ponto2,
-        this.form.value.ponto3
-      ]
+      tipoResiduo: this.form.value.tipoResiduo,
+      pontosColetaIds: pontosIds
     };
 
     this.aoSalvar.emit(rota);

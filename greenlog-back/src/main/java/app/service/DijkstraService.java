@@ -72,25 +72,40 @@ public class DijkstraService implements CalculadoraRotaAdapter {
             return List.of(unico, unico);
         }
 
+        System.out.println("bairrosIds: " + bairrosIds);
+
         Long inicio = bairrosIds.get(0);
         Long atual = inicio;
+
+        System.out.println("Inicio: " + inicio);
+        System.out.println("Atual: " + atual);
 
         // mantém a ordem de inserção, mas permite remoção
         Set<Long> restantes = new LinkedHashSet<>(bairrosIds.subList(1, bairrosIds.size()));
 
+        System.out.println("Restantes: " + restantes);
+        
         List<Long> percurso = new ArrayList<>();
         percurso.add(inicio);
+
+        System.out.println("Percurso: " + inicio);
 
         while (!restantes.isEmpty()) {
             Long proximo = null;
             double menorDist = Double.MAX_VALUE;
 
             for (Long candidato : restantes) {
+                System.out.println("Restantes: " + restantes);
+                System.out.println("Atual: " + atual);
+                System.out.println("Candidato: " + candidato);
                 List<RuaConexao> caminho = grafoService.calcularMenorCaminho(atual, candidato);
+                System.out.println("Caminho: " + caminho);
                 if (caminho == null || caminho.isEmpty()) {
                     continue;
                 }
                 double dist = grafoService.calcularDistancia(caminho);
+                System.out.println("Dist: " + dist);
+                System.out.println("MenorDist: " + menorDist);
                 if (dist < menorDist) {
                     menorDist = dist;
                     proximo = candidato;

@@ -4,13 +4,12 @@ import app.dto.pontocoleta.PontoColetaRequestDTO;
 import app.dto.pontocoleta.PontoColetaResponseDTO;
 import app.entity.Bairro;
 import app.entity.PontoColeta;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
 import app.mapper.PontoColetaMapper;
 import app.repository.BairroRepository;
 import app.repository.PontoColetaRepository;
-import app.repository.TipoResiduoModelRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +22,13 @@ public class PontoColetaService {
 
     private final PontoColetaRepository pontoColetaRepository;
     private final BairroRepository bairroRepository;
-    private final TipoResiduoModelRepository tipoResiduoModelRepository;
     private final PontoColetaMapper pontoColetaMapper;
 
     public PontoColetaService(PontoColetaRepository pontoColetaRepository,
                               BairroRepository bairroRepository,
-                              TipoResiduoModelRepository tipoResiduoModelRepository,
                               PontoColetaMapper pontoColetaMapper) {
         this.pontoColetaRepository = pontoColetaRepository;
         this.bairroRepository = bairroRepository;
-        this.tipoResiduoModelRepository = tipoResiduoModelRepository;
         this.pontoColetaMapper = pontoColetaMapper;
     }
 
@@ -42,10 +38,7 @@ public class PontoColetaService {
     public List<PontoColetaResponseDTO> listarTodos() {
         return pontoColetaRepository.findAll(Sort.by("nome").ascending())
                 .stream()
-                .map(p -> pontoColetaMapper.toResponseDTO(
-                        p,
-                        p.getTiposResiduo().stream().toList()
-                ))
+                .map(pontoColetaMapper::toResponseDTO)
                 .toList();
     }
 
@@ -56,10 +49,7 @@ public class PontoColetaService {
 
         return pontoColetaRepository.findByBairro(bairro)
                 .stream()
-                .map(p -> pontoColetaMapper.toResponseDTO(
-                        p,
-                        p.getTiposResiduo().stream().toList()
-                ))
+                .map(pontoColetaMapper::toResponseDTO)
                 .toList();
     }
 
@@ -67,10 +57,7 @@ public class PontoColetaService {
     public List<PontoColetaResponseDTO> listarPorNome(String nome) {
         return pontoColetaRepository.findByNomeContainingIgnoreCase(nome)
                 .stream()
-                .map(p -> pontoColetaMapper.toResponseDTO(
-                        p,
-                        p.getTiposResiduo().stream().toList()
-                ))
+                .map(pontoColetaMapper::toResponseDTO)
                 .toList();
     }
 
@@ -79,10 +66,7 @@ public class PontoColetaService {
         PontoColeta ponto = pontoColetaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Ponto de coleta não encontrado: " + id));
 
-        return pontoColetaMapper.toResponseDTO(
-                ponto,
-                ponto.getTiposResiduo().stream().toList()
-        );
+        return pontoColetaMapper.toResponseDTO(ponto);
     }
 
     // ========= CRIAR / ATUALIZAR / EXCLUIR =========
@@ -94,19 +78,12 @@ public class PontoColetaService {
         Bairro bairro = bairroRepository.findById(dto.bairroId())
                 .orElseThrow(() -> new NegocioException("Bairro não encontrado."));
 
-        List<TipoResiduoModel> tipos = tipoResiduoModelRepository
-                .findAllById(dto.tiposResiduoIds());
-
-        if (tipos.size() != dto.tiposResiduoIds().size()) {
-            throw new NegocioException("Um ou mais tipos de resíduo não foram encontrados.");
-        }
-
         PontoColeta ponto = pontoColetaMapper.toEntity(dto);
         ponto.setBairro(bairro);
-        ponto.setTiposResiduo(new HashSet<>(tipos));
+        ponto.setTiposResiduo(new HashSet<TipoResiduo>(dto.tiposResiduos()));
 
         PontoColeta salvo = pontoColetaRepository.save(ponto);
-        return pontoColetaMapper.toResponseDTO(salvo, tipos);
+        return pontoColetaMapper.toResponseDTO(salvo);
     }
 
     @Transactional
@@ -119,25 +96,19 @@ public class PontoColetaService {
         Bairro bairro = bairroRepository.findById(dto.bairroId())
                 .orElseThrow(() -> new NegocioException("Bairro não encontrado."));
 
-        List<TipoResiduoModel> tipos = tipoResiduoModelRepository
-                .findAllById(dto.tiposResiduoIds());
-
-        if (tipos.size() != dto.tiposResiduoIds().size()) {
-            throw new NegocioException("Um ou mais tipos de resíduo não foram encontrados.");
-        }
-
         existente.setBairro(bairro);
         existente.setNome(dto.nome());
         existente.setResponsavel(dto.responsavel());
         existente.setTelefone(dto.telefone());
         existente.setEmail(dto.email());
         existente.setEndereco(dto.endereco());
-        existente.setHorarioFuncionamento(dto.horarioFuncionamento());
+        existente.setHoraEntrada(dto.horaEntrada());
+        existente.setHoraSaida(dto.horaSaida());
         existente.setQuantidadeResiduosKg(dto.quantidadeResiduosKg());
-        existente.setTiposResiduo(new HashSet<>(tipos));
+        existente.setTiposResiduo(new HashSet<TipoResiduo>(dto.tiposResiduos()));
 
         PontoColeta atualizado = pontoColetaRepository.save(existente);
-        return pontoColetaMapper.toResponseDTO(atualizado, tipos);
+        return pontoColetaMapper.toResponseDTO(atualizado);
     }
 
     @Transactional
@@ -145,8 +116,6 @@ public class PontoColetaService {
         PontoColeta ponto = pontoColetaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Ponto de coleta não encontrado: " + id));
 
-        // Se futuramente for necessário bloquear exclusão quando houver rota associada,
-        // a validação pode ser feita aqui antes do delete.
         pontoColetaRepository.delete(ponto);
     }
 
@@ -162,7 +131,7 @@ public class PontoColetaService {
         if (dto.bairroId() == null) {
             throw new NegocioException("O bairro é obrigatório.");
         }
-        if (dto.tiposResiduoIds() == null || dto.tiposResiduoIds().isEmpty()) {
+        if (dto.tiposResiduos() == null || dto.tiposResiduos().isEmpty()) {
             throw new NegocioException("Informe pelo menos um tipo de resíduo.");
         }
         if (dto.quantidadeResiduosKg() == null || dto.quantidadeResiduosKg() < 0) {

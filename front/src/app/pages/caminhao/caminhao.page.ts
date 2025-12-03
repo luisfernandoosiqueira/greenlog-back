@@ -6,9 +6,9 @@ import { NavBar } from "../../components/nav-bar/nav-bar.component";
 import { FooterComponent } from "../../components/footer/footer.component";
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Residuos } from '../../model/Residuos';
 import { NovoCaminhaoComponent } from "../../components/novo-caminhao/novo-caminhao.component";
 import { CaminhaoService } from '../../services/caminhao.service';
+import { TipoResiduo } from '../../model/enums/TipoResiduo';
 
 @Component({
   selector: 'app-caminhao',
@@ -67,9 +67,9 @@ export class CaminhaoPage implements OnInit{
     }
   }
 
-  getTiposTexto(tipos: Residuos[]): string {
+  getTiposTexto(tipos: TipoResiduo[]): string {
     if (!tipos || tipos.length === 0) return '—';
-    return tipos.map(t => t.nome).join(', ');
+    return tipos.map(t => t).join(', ');
   }
 
   salvarCaminhao(caminhaoSalvo: CaminhaoRequest){

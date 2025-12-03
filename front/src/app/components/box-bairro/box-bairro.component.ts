@@ -66,8 +66,8 @@ export class BoxBairroComponent implements OnInit {
     this.pontoSendoEditado = false;
   }
 
-  getTiposResiduos(): string{
-    return "";
+  getTiposResiduos(ponto: PontoColetaResponse): string {
+    return ponto.tiposResiduos?.join(", ") || "";
   }
 
   salvarPonto(pontoColetaSalvo: PontoColetaRequest) {

@@ -1,5 +1,5 @@
 import { BairroResponse } from "./Bairro";
-import { Residuos } from "./Residuos";
+import { TipoResiduo } from "./enums/TipoResiduo";
 
 export interface PontoColetaResponse{
     id: number,
@@ -12,7 +12,7 @@ export interface PontoColetaResponse{
     horaEntrada: string;
     horaSaida: string;
     quantidadeResiduosKg: number,
-    tipoResiduo: Residuos[]
+    tiposResiduos: TipoResiduo[]
 }
 
 export interface PontoColetaRequest{
@@ -25,5 +25,5 @@ export interface PontoColetaRequest{
     horaEntrada: string,
     horaSaida: string,
     quantidadeResiduosKg: number,
-    tipoResiduoId: number[]
+    tiposResiduos: TipoResiduo[]
 }

@@ -33,7 +33,7 @@ export class CaminhaoService{
     }
 
     private handleError(error: any) {
-        console.error('Erro na API de Puxadores de Produto: ', error);
-        return throwError(() => new Error('Erro ao consultar a API de puxadores de produto.'));
+        console.error('Erro na API de Caminhão: ', error);
+        return throwError(() => new Error('Erro ao consultar a API de caminhão.'));
     }
 }

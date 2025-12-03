@@ -1,5 +1,6 @@
 package app.entity;
 
+import app.enums.TipoResiduo;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -33,16 +34,20 @@ public class PontoColeta {
     @Column(length = 200)
     private String endereco;
 
-    @Column(length = 60)
-    private String horarioFuncionamento;
+    @Column(length = 5)
+    private String horaEntrada;
 
-    @ManyToMany
-    @JoinTable(
+    @Column(length = 5)
+    private String horaSaida;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
             name = "TB_PONTO_COLETA_TIPO_RESIDUO",
-            joinColumns = @JoinColumn(name = "ponto_coleta_id"),
-            inverseJoinColumns = @JoinColumn(name = "tipo_residuo_id")
+            joinColumns = @JoinColumn(name = "ponto_coleta_id")
     )
-    private Set<TipoResiduoModel> tiposResiduo = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_residuo", nullable = false, length = 20)
+    private Set<TipoResiduo> tiposResiduo = new HashSet<>();
 
     @Column(nullable = false)
     private Integer quantidadeResiduosKg = 0;
@@ -102,19 +107,27 @@ public class PontoColeta {
         this.endereco = endereco;
     }
 
-    public String getHorarioFuncionamento() {
-        return horarioFuncionamento;
+    public String getHoraEntrada() {
+        return horaEntrada;
     }
 
-    public void setHorarioFuncionamento(String horarioFuncionamento) {
-        this.horarioFuncionamento = horarioFuncionamento;
+    public void setHoraEntrada(String horaEntrada) {
+        this.horaEntrada = horaEntrada;
     }
 
-    public Set<TipoResiduoModel> getTiposResiduo() {
+    public String getHoraSaida() {
+        return horaSaida;
+    }
+
+    public void setHoraSaida(String horaSaida) {
+        this.horaSaida = horaSaida;
+    }
+
+    public Set<TipoResiduo> getTiposResiduo() {
         return tiposResiduo;
     }
 
-    public void setTiposResiduo(Set<TipoResiduoModel> tiposResiduo) {
+    public void setTiposResiduo(Set<TipoResiduo> tiposResiduo) {
         this.tiposResiduo = tiposResiduo;
     }
 

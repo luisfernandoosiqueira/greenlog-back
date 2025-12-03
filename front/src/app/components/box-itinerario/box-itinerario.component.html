@@ -43,14 +43,14 @@
     </div>
     <div class="container-rotas" *ngFor="let rota of itinerario?.rota?.trechos">
         <div class="row-rota" *ngFor="let trecho of rota.ruas">
-            <span class="bairro-origem">{{trecho.origemId}}</span>
+            <span class="bairro-origem">{{trecho.origem}}</span>
             <div class="seta">
                 <div class="line-wrapper">
                     <p class="line-label">{{trecho.distanciaKm}} km</p>
                     <div class="line-seta"></div>
                 </div>
             </div>
-            <span class="bairro-destino">{{trecho.destinoId}}</span>
+            <span class="bairro-destino">{{trecho.destino}}</span>
         </div>
     </div>
 </section>

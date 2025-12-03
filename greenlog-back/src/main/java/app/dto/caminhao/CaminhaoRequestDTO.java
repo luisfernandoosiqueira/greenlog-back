@@ -1,6 +1,7 @@
 package app.dto.caminhao;
 
 import app.enums.StatusCaminhao;
+import app.enums.TipoResiduo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,6 @@ public record CaminhaoRequestDTO(
         StatusCaminhao status,
 
         @NotEmpty(message = "Informe pelo menos um tipo de resíduo")
-        List<@NotNull(message = "O id do tipo de resíduo é obrigatório") Long> tiposResiduoIds
+        List<@NotNull(message = "O tipo de resíduo é obrigatório") TipoResiduo> tiposResiduos
 ) {
 }

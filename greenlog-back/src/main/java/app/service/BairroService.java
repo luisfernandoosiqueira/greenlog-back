@@ -109,10 +109,7 @@ public class BairroService {
         List<PontoColeta> pontos = pontoColetaRepository.findByBairro(bairro);
 
         List<PontoColetaResponseDTO> pontosDTO = pontos.stream()
-                .map(p -> pontoColetaMapper.toResponseDTO(
-                        p,
-                        p.getTiposResiduo().stream().toList()
-                ))
+                .map(pontoColetaMapper::toResponseDTO)
                 .toList();
 
         return bairroMapper.toResponseDTO(bairro, pontosDTO);

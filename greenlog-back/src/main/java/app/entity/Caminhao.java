@@ -1,6 +1,7 @@
 package app.entity;
 
 import app.enums.StatusCaminhao;
+import app.enums.TipoResiduo;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -34,13 +35,14 @@ public class Caminhao {
     @Column(nullable = false, length = 15)
     private StatusCaminhao status;
 
-    @ManyToMany
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
             name = "TB_CAMINHAO_TIPO_RESIDUO",
-            joinColumns = @JoinColumn(name = "caminhao_id"),
-            inverseJoinColumns = @JoinColumn(name = "tipo_residuo_id")
+            joinColumns = @JoinColumn(name = "caminhao_id")
     )
-    private Set<TipoResiduoModel> tiposResiduo = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_residuo", nullable = false, length = 20)
+    private Set<TipoResiduo> tiposResiduo = new HashSet<>();
 
     public Caminhao() {
     }
@@ -88,11 +90,11 @@ public class Caminhao {
         this.status = status;
     }
 
-    public Set<TipoResiduoModel> getTiposResiduo() {
+    public Set<TipoResiduo> getTiposResiduo() {
         return tiposResiduo;
     }
 
-    public void setTiposResiduo(Set<TipoResiduoModel> tiposResiduo) {
+    public void setTiposResiduo(Set<TipoResiduo> tiposResiduo) {
         this.tiposResiduo = tiposResiduo;
     }
 

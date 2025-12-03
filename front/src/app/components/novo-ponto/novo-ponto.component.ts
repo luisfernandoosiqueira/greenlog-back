@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Residuos } from '../../model/Residuos';
 import { PontoColetaRequest, PontoColetaResponse } from '../../model/PontoColeta';
 import { FormArray, FormBuilder, FormControl, FormGroup, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ResiduoService } from '../../services/residuo.service';
+import { TipoResiduo } from '../../model/enums/TipoResiduo';
 
 @Component({
   selector: 'app-novo-ponto',
@@ -13,16 +12,18 @@ import { ResiduoService } from '../../services/residuo.service';
 })
 export class NovoPontoComponent implements OnInit {
   @Input() pontoParaEditar: PontoColetaResponse | null = null;
+  @Input() bairroId: number = 0;
 
   @Output() aoSalvar = new EventEmitter<PontoColetaRequest>();
   @Output() aoCancelar = new EventEmitter<void>();
 
-  residuosDisponivel: Residuos[] = [];
+  tiposResiduosEnum = Object.keys(TipoResiduo);
 
   form: FormGroup;
 
-  constructor(private fb: FormBuilder, private residuoService: ResiduoService){
+  constructor(private fb: FormBuilder){
     this.form = this.fb.group({
+      bairroId: [''],
       nome: ['', [Validators.required, Validators.minLength(3)]],
       responsavel: ['', [Validators.required, Validators.minLength(3)]],
       telefone: ['', [Validators.required, Validators.maxLength(11), Validators.minLength(10)]],
@@ -31,52 +32,28 @@ export class NovoPontoComponent implements OnInit {
       horaEntrada: ['', [Validators.required]],
       horaSaida: ['', [Validators.required]],
       quantidadeResiduosKg: ['', [Validators.required]],
-      tiposResiduoIds: this.fb.array([])
+      tiposResiduos: this.fb.array([])
     })
-
-    residuoService.findAll().subscribe({
-      next: (residuos) => {
-        this.residuosDisponivel = residuos;
-        console.log("Resíduos carregados:", residuos);
-
-
-        // cria o formarray com base nos resíduos carregados
-        const formResiduo = this.fb.array(
-          residuos.map(() => new FormControl(false))
-        );
-        this.form.setControl('tiposResiduoIds', formResiduo);
-
-        // se estiver editando, preenche
-        if (this.pontoParaEditar) {
-          this.form.patchValue({
-            nome: this.pontoParaEditar.nome,
-            responsavel: this.pontoParaEditar.responsavel,
-            telefone: this.pontoParaEditar.telefone,
-            email: this.pontoParaEditar.email,
-            horaEntrada: this.pontoParaEditar.horaEntrada,
-            horaSaida: this.pontoParaEditar.horaSaida,
-            quantidadeResiduosKg: this.pontoParaEditar.quantidadeResiduosKg
-          });
-
-          (this.pontoParaEditar.tipoResiduo || []).forEach(residuo => {
-            const index = this.residuosDisponivel.findIndex(r => r.id === residuo.id);
-            if (index >= 0) {
-              (this.form.get('tiposResiduoIds') as FormArray).at(index).setValue(true);
-            }
-          });
-        }
-
-      },
-      error: (err) => console.error("Erro ao carregar resíduos", err)
-    });
   }
 
   ngOnInit(): void {
   }
 
   salvar() {
-    if (this.form.valid){
-      const pontoSalvo: PontoColetaRequest = this.form.value; 
+    if (this.form.valid) {
+
+      const selecionadosBoolean = this.form.value.tiposResiduos;
+
+      const tiposResiduoNomes = selecionadosBoolean
+        .map((checked: boolean, i: number) => checked ? this.tiposResiduosEnum[i] : null)
+        .filter((nome: string | null): nome is string => nome !== null);
+
+      const pontoSalvo: PontoColetaRequest = {
+        ...this.form.value,
+        bairroId: this.bairroId,
+        tiposResiduos: tiposResiduoNomes
+      };
+
       this.aoSalvar.emit(pontoSalvo);
     }
   }

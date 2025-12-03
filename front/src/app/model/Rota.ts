@@ -1,6 +1,6 @@
 import { CaminhaoResponse } from "./Caminhao"
+import { TipoResiduo } from "./enums/TipoResiduo"
 import { PontoColetaResponse } from "./PontoColeta"
-import { Residuos } from "./Residuos"
 import { TrechoRota } from "./Trecho"
 
 export interface RotaResponse{
@@ -8,7 +8,7 @@ export interface RotaResponse{
     nome: string,
     pesoTotal: number,
     dataCriacao: string,
-    tipoResiduo: Residuos,
+    tipoResiduo: TipoResiduo,
     caminhao: CaminhaoResponse,
     distanciaTotal: number,
     trechos: TrechoRota[],
@@ -18,6 +18,6 @@ export interface RotaResponse{
 export interface RotaRequest{
     nome: string,
     caminhaoPlaca: string,
-    tipoResiduoId: number,
+    tipoResiduo: number,
     pontosColetaIds: number[]
 }

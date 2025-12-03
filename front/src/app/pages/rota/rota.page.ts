@@ -5,8 +5,9 @@ import { RotaRequest, RotaResponse } from '../../model/Rota';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Residuos } from '../../model/Residuos';
 import { NovaRotaComponent } from "../../components/nova-rota/nova-rota.component";
+import { TipoResiduo } from '../../model/enums/TipoResiduo';
+import { RotaService } from '../../services/rota.service';
 
 @Component({
   selector: 'app-rota',
@@ -21,6 +22,17 @@ export class RotaPage {
   exibirModal: boolean = false;
   rotaSendoEditado: boolean = false;
   rotaParaAtualizar: RotaResponse | null = null;
+
+  constructor(private rotaService: RotaService) {
+    this.rotaService.findAll().subscribe({
+      next: (dadosApi) => {
+        this.listaRota = dadosApi;
+      },
+      error: (erro) => {
+        console.error('Erros ao cadastrar uma rota: ', erro);
+      }
+    })
+  }
   
   abrirModalNovo() {
     this.rotaParaAtualizar = null;
@@ -40,13 +52,41 @@ export class RotaPage {
     this.rotaSendoEditado = false;
   }
 
-  getTodosResiduos(tiposResiduo: Residuos[]): string {
+  getTodosResiduos(tiposResiduo: TipoResiduo[]): string {
     if (!tiposResiduo || tiposResiduo.length === 0) return "";
 
-    return tiposResiduo.map(r => r.nome).join(", ");
+    return tiposResiduo.map(r => r).join(", ");
   }
 
   salvar(ruaSalvo: RotaRequest){
-  
+    if(this.rotaSendoEditado){
+      if(this.rotaParaAtualizar?.id == null) throw new Error('O id da rota não pode ser nulo ao tentar salvar.');
+      this.rotaService.update(ruaSalvo, this.rotaParaAtualizar.id).subscribe({
+        next: (resposta) => {
+          console.log('Rota atualizar com sucesso!');
+          this.rotaService.findAll().subscribe({
+            next: (dadosApi) => this.listaRota = dadosApi
+          });
+          this.fecharModel();
+        },
+        error: (erro) => {
+          console.error('Erros ao atualizar uma rota: ', erro);
+        }
+      })
+    }else{
+      this.rotaService.create(ruaSalvo).subscribe({
+        next: (resposta) => {
+          console.log('Rota cadastrado com sucesso!');
+          this.rotaService.findAll().subscribe({
+            next: (dadosApi) => this.listaRota = dadosApi
+          });
+          this.fecharModel();
+        },
+        error: (erro) => {
+          console.error('Erros ao cadastrar uma rota: ', erro);
+        }
+      })
+      this.fecharModel();
+    }
   }
 }

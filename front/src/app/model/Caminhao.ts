@@ -1,13 +1,13 @@
 import { StatusCaminhao } from "./enums/StatusCaminhao";
+import { TipoResiduo } from "./enums/TipoResiduo";
 import { MotoristaResponse } from "./Motorista";
-import { Residuos } from "./Residuos";
 
 export interface CaminhaoResponse{
     placa: string,
     motorista: MotoristaResponse,
     capacidadeKg: number,
-    status: StatusCaminhao
-    tiposResiduoIds: Residuos[]
+    status: StatusCaminhao,
+    tiposResiduos: TipoResiduo[]
 }
 
 export interface CaminhaoRequest{
@@ -15,5 +15,5 @@ export interface CaminhaoRequest{
     motoristaCpf: string,
     capacidadeKg: number,
     status: StatusCaminhao,
-    tiposResiduoIds: Residuos[]
+    tiposResiduos: TipoResiduo[]
 }

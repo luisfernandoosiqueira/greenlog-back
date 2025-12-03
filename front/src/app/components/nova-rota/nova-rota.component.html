@@ -24,10 +24,10 @@
 
         <div class="form-group">
           <label>Residuo*</label>
-          <select formControlName="tipoResiduoId">
+          <select formControlName="tipoResiduo">
             <option value="" disabled>Selecione...</option>
-            <option *ngFor="let r of residuosDisponiveis" [value]="r.id">
-              {{ r.nome }}
+            <option *ngFor="let r of tiposResiduosEnum" [value]="r">
+              {{ r }}
             </option>
           </select>
         </div>

@@ -47,8 +47,8 @@
             </div>
             <div class="row">
                 <label>SERVIÇOS ADICIONAIS:</label>
-                <div class="box-check" formArrayName="tiposResiduoIds" *ngIf="form.get('tiposResiduoIds')">
-                    <div *ngFor="let residuo of residuosDisponivel; let i = index">
+                <div class="box-check" formArrayName="tiposResiduos" *ngIf="form.get('tiposResiduos')">
+                    <div *ngFor="let residuo of tiposResiduosEnum; let i = index">
                         <label>
                             <input type="checkbox" [formControlName]="i">
                             {{ residuo }}
