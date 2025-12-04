@@ -7,6 +7,8 @@ import app.entity.PontoColeta;
 import app.entity.Rota;
 import app.entity.RuaConexao;
 import app.entity.TrechoRota;
+import app.enums.StatusCaminhao;
+import app.enums.StatusMotorista;
 import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
@@ -78,6 +80,8 @@ public class RotaService {
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
 
+        validarCaminhaoAtivoComMotoristaAtivo(caminhao);
+
         TipoResiduo tipoResiduo = dto.tipoResiduo();
 
         List<PontoColeta> pontos = carregarPontosNaOrdem(dto.pontosColetaIds());
@@ -118,6 +122,8 @@ public class RotaService {
 
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
+
+        validarCaminhaoAtivoComMotoristaAtivo(caminhao);
 
         TipoResiduo tipoResiduo = dto.tipoResiduo();
 
@@ -286,5 +292,19 @@ public class RotaService {
         }
 
         return caminhos;
+    }
+
+    // valida status de caminhão e motorista
+    private void validarCaminhaoAtivoComMotoristaAtivo(Caminhao caminhao) {
+        if (caminhao.getStatus() == null || caminhao.getStatus() != StatusCaminhao.ATIVO) {
+            throw new NegocioException("Não é possível utilizar caminhão com status " + caminhao.getStatus() + " em uma rota.");
+        }
+        var motorista = caminhao.getMotorista();
+        if (motorista == null) {
+            throw new NegocioException("O caminhão selecionado não possui motorista associado.");
+        }
+        if (motorista.getStatus() == null || motorista.getStatus() != StatusMotorista.ATIVO) {
+            throw new NegocioException("Não é possível utilizar motorista com status " + motorista.getStatus() + " em uma rota.");
+        }
     }
 }
