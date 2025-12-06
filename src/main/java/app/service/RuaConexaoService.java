@@ -89,10 +89,6 @@ public class RuaConexaoService {
         Bairro destino = bairroRepository.findById(dto.destinoId())
                 .orElseThrow(() -> new NegocioException("Bairro de destino não encontrado."));
 
-        if (origem.getId().equals(destino.getId())) {
-            throw new NegocioException("Origem e destino não podem ser o mesmo bairro.");
-        }
-
         RuaConexao rc = ruaConexaoMapper.toEntity(dto.distanciaKm());
         rc.setOrigem(origem);
         rc.setDestino(destino);
@@ -118,10 +114,6 @@ public class RuaConexaoService {
 
         Bairro destino = bairroRepository.findById(dto.destinoId())
                 .orElseThrow(() -> new NegocioException("Bairro de destino não encontrado."));
-
-        if (origem.getId().equals(destino.getId())) {
-            throw new NegocioException("Origem e destino não podem ser o mesmo bairro.");
-        }
 
         existente.setOrigem(origem);
         existente.setDestino(destino);
@@ -160,6 +152,11 @@ public class RuaConexaoService {
         }
         if (dto.destinoId() == null) {
             throw new NegocioException("O bairro de destino é obrigatório.");
+        }
+        // origem e destino não podem ser o mesmo bairro
+        if (dto.origemId() != null && dto.destinoId() != null
+                && dto.origemId().equals(dto.destinoId())) {
+            throw new NegocioException("Origem e destino não podem ser o mesmo bairro.");
         }
         if (dto.distanciaKm() == null || dto.distanciaKm() <= 0) {
             throw new NegocioException("A distância deve ser maior que zero.");
