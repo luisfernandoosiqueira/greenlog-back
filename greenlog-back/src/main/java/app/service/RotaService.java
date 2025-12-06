@@ -7,6 +7,8 @@ import app.entity.PontoColeta;
 import app.entity.Rota;
 import app.entity.RuaConexao;
 import app.entity.TrechoRota;
+import app.enums.StatusCaminhao;
+import app.enums.StatusMotorista;
 import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
@@ -73,12 +75,12 @@ public class RotaService {
 
     @Transactional
     public RotaResponseDTO criar(RotaRequestDTO dto) {
-        System.out.println("======================================== PONTOS DE COLETAS: " + dto.pontosColetaIds().size());
-
         validar(dto);
 
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
+
+        validarCaminhaoAtivoComMotoristaAtivo(caminhao);
 
         TipoResiduo tipoResiduo = dto.tipoResiduo();
 
@@ -113,7 +115,6 @@ public class RotaService {
 
     @Transactional
     public RotaResponseDTO atualizar(Long id, RotaRequestDTO dto) {
-
         Rota existente = rotaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Rota não encontrada: " + id));
 
@@ -121,6 +122,8 @@ public class RotaService {
 
         Caminhao caminhao = caminhaoRepository.findByPlacaIgnoreCase(dto.caminhaoPlaca())
                 .orElseThrow(() -> new NegocioException("Caminhão não encontrado."));
+
+        validarCaminhaoAtivoComMotoristaAtivo(caminhao);
 
         TipoResiduo tipoResiduo = dto.tipoResiduo();
 
@@ -252,10 +255,6 @@ public class RotaService {
         List<Long> bairros = new ArrayList<>();
         Set<Long> vistos = new HashSet<>();
 
-        // Ponto de partida
-        bairros.add(1l);
-
-
         for (PontoColeta p : pontos) {
             if (p.getBairro() == null || p.getBairro().getId() == null) {
                 throw new NegocioException("Ponto de coleta sem bairro associado: " + p.getNome());
@@ -270,11 +269,6 @@ public class RotaService {
             throw new NegocioException("Não foi possível determinar os bairros da rota.");
         }
 
-        // Ponto de chegada
-        bairros.add(1l);
-
-        System.out.println("extrairBairrosOrdenados: " + bairros);
-
         return bairros;
     }
 
@@ -286,8 +280,6 @@ public class RotaService {
         List<List<RuaConexao>> caminhos = new ArrayList<>();
 
         for (int i = 0; i < ordemBairros.size() - 1; i++) {
-            System.out.println(ordemBairros.get(i) + " - para - " + ordemBairros.get(i + 1));
-
             Long origemId = ordemBairros.get(i);
             Long destinoId = ordemBairros.get(i + 1);
 
@@ -300,5 +292,19 @@ public class RotaService {
         }
 
         return caminhos;
+    }
+
+    // valida status de caminhão e motorista
+    private void validarCaminhaoAtivoComMotoristaAtivo(Caminhao caminhao) {
+        if (caminhao.getStatus() == null || caminhao.getStatus() != StatusCaminhao.ATIVO) {
+            throw new NegocioException("Não é possível utilizar caminhão com status " + caminhao.getStatus() + " em uma rota.");
+        }
+        var motorista = caminhao.getMotorista();
+        if (motorista == null) {
+            throw new NegocioException("O caminhão selecionado não possui motorista associado.");
+        }
+        if (motorista.getStatus() == null || motorista.getStatus() != StatusMotorista.ATIVO) {
+            throw new NegocioException("Não é possível utilizar motorista com status " + motorista.getStatus() + " em uma rota.");
+        }
     }
 }

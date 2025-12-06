@@ -76,4 +76,25 @@ public interface ItinerarioRepository extends JpaRepository<Itinerario, Long> {
            "FROM Itinerario i " +
            "WHERE i.rota = :rota")
     boolean existsByRota(@Param("rota") Rota rota);
+
+    // impedir mesmo motorista em dois itinerários no mesmo dia
+    @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END " +
+           "FROM Itinerario i " +
+           "WHERE i.rota.caminhao.motorista.cpf = :cpf " +
+           "  AND FUNCTION('DATE', i.dataAgendamento) = :data")
+    boolean existsByMotoristaAndData(
+        @Param("cpf")  String cpf,
+        @Param("data") LocalDate data
+    );
+
+    // impedir ponto de coleta em dois itinerários diferentes no mesmo dia
+    @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END " +
+           "FROM Itinerario i " +
+           "JOIN i.rota.pontosColeta pc " +
+           "WHERE pc.id IN :pontosIds " +
+           "  AND FUNCTION('DATE', i.dataAgendamento) = :data")
+    boolean existsByPontoColetaAndData(
+        @Param("pontosIds") List<Long> pontosIds,
+        @Param("data")      LocalDate data
+    );
 }

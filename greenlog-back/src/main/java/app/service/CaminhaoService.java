@@ -5,6 +5,7 @@ import app.dto.caminhao.CaminhaoResponseDTO;
 import app.entity.Caminhao;
 import app.entity.Motorista;
 import app.enums.StatusCaminhao;
+import app.enums.StatusMotorista;
 import app.enums.TipoResiduo;
 import app.exceptions.NegocioException;
 import app.exceptions.RecursoNaoEncontradoException;
@@ -71,6 +72,11 @@ public class CaminhaoService {
         Motorista motorista = motoristaRepository.findById(dto.motoristaCpf())
                 .orElseThrow(() -> new NegocioException("Motorista não encontrado."));
 
+        // valida status do motorista
+        if (motorista.getStatus() == null || motorista.getStatus() != StatusMotorista.ATIVO) {
+            throw new NegocioException("Não é possível associar caminhão a motorista com status " + motorista.getStatus() + ".");
+        }
+
         Caminhao caminhao = caminhaoMapper.toEntity(dto);
         caminhao.setMotorista(motorista);
         caminhao.setTiposResiduo(new HashSet<>(dto.tiposResiduos()));
@@ -92,6 +98,11 @@ public class CaminhaoService {
 
         Motorista motorista = motoristaRepository.findById(dto.motoristaCpf())
                 .orElseThrow(() -> new NegocioException("Motorista não encontrado."));
+
+        // valida status do motorista
+        if (motorista.getStatus() == null || motorista.getStatus() != StatusMotorista.ATIVO) {
+            throw new NegocioException("Não é possível associar caminhão a motorista com status " + motorista.getStatus() + ".");
+        }
 
         existente.setMotorista(motorista);
         existente.setCapacidadeKg(dto.capacidadeKg());
