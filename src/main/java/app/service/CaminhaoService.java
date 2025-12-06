@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CaminhaoService {
@@ -77,6 +78,11 @@ public class CaminhaoService {
             throw new NegocioException("Não é possível associar caminhão a motorista com status " + motorista.getStatus() + ".");
         }
 
+        // motorista não pode estar em dois caminhões
+        if (caminhaoRepository.existsByMotorista_Cpf(dto.motoristaCpf())) {
+            throw new NegocioException("Este motorista já está vinculado a outro caminhão.");
+        }
+
         Caminhao caminhao = caminhaoMapper.toEntity(dto);
         caminhao.setMotorista(motorista);
         caminhao.setTiposResiduo(new HashSet<>(dto.tiposResiduos()));
@@ -102,6 +108,14 @@ public class CaminhaoService {
         // valida status do motorista
         if (motorista.getStatus() == null || motorista.getStatus() != StatusMotorista.ATIVO) {
             throw new NegocioException("Não é possível associar caminhão a motorista com status " + motorista.getStatus() + ".");
+        }
+
+        // se já houver caminhão com este motorista, não pode ser outro caminhão
+        Optional<Caminhao> caminhaoDoMotorista = caminhaoRepository.findByMotorista_Cpf(dto.motoristaCpf());
+        if (caminhaoDoMotorista.isPresent()
+                && !caminhaoDoMotorista.get().getId().equals(existente.getId())) {
+            throw new NegocioException("Este motorista já está vinculado ao caminhão de placa " +
+                    caminhaoDoMotorista.get().getPlaca() + ".");
         }
 
         existente.setMotorista(motorista);

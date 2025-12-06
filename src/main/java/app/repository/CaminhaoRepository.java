@@ -13,5 +13,10 @@ public interface CaminhaoRepository extends JpaRepository<Caminhao, Long> {
 
     Optional<Caminhao> findByPlacaIgnoreCase(String placa); // usado no buscar/atualizar/excluir
 
+    // Motorista só pode estar em um caminhão
+    boolean existsByMotorista_Cpf(String cpf);
+
+    Optional<Caminhao> findByMotorista_Cpf(String cpf);
+
     List<Caminhao> findByStatus(StatusCaminhao status);
 }
