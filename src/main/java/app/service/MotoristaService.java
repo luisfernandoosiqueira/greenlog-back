@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -103,8 +105,6 @@ public class MotoristaService {
         Motorista motorista = motoristaRepository.findById(cpf)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado: " + cpf));
 
-        // Caso seja necessário impedir exclusão se houver vínculo com caminhões,
-        // a validação pode ser incluída aqui futuramente.
         motoristaRepository.delete(motorista);
     }
 
@@ -118,7 +118,6 @@ public class MotoristaService {
             throw new NegocioException("O CPF é obrigatório.");
         }
 
-        // NOVO: valida CPF usando os dígitos verificadores
         if (!validarCPF(dto.cpf())) {
             throw new NegocioException("O CPF informado é inválido.");
         }
@@ -135,6 +134,25 @@ public class MotoristaService {
         if (dto.status() == null) {
             throw new NegocioException("O status é obrigatório.");
         }
+
+        // valida data de nascimento (formato ISO yyyy-MM-dd), não futura e idade mínima
+        LocalDate dataNascimento;
+        try {
+            dataNascimento = LocalDate.parse(dto.data());
+        } catch (DateTimeParseException e) {
+            throw new NegocioException("Data de nascimento inválida. Use o formato yyyy-MM-dd.");
+        }
+
+        LocalDate hoje = LocalDate.now();
+
+        if (dataNascimento.isAfter(hoje)) {
+            throw new NegocioException("A data de nascimento não pode ser futura.");
+        }
+
+        int idade = Period.between(dataNascimento, hoje).getYears();
+        if (idade < 18) {
+            throw new NegocioException("O motorista deve ter pelo menos 18 anos.");
+        }
     }
 
     // ========= VALIDAÇÃO DE CPF =========
@@ -144,15 +162,12 @@ public class MotoristaService {
             return false;
         }
 
-        // Remove qualquer caractere que não seja dígito (permite CPF com máscara 000.000.000-00)
         cpf = cpf.replaceAll("\\D", "");
 
-        // CPF precisa ter exatamente 11 dígitos
         if (cpf.length() != 11) {
             return false;
         }
 
-        // Rejeita CPFs com todos os dígitos iguais (ex.: 00000000000, 11111111111, etc.)
         boolean todosIguais = true;
         for (int i = 1; i < cpf.length(); i++) {
             if (cpf.charAt(i) != cpf.charAt(0)) {
@@ -172,7 +187,6 @@ public class MotoristaService {
         int sum = 0;
         int firstDigit, secondDigit;
 
-        // Cálculo do primeiro dígito verificador
         for (int i = 0, weight = 10; i < 9; i++, weight--) {
             sum += numbers[i] * weight;
         }
@@ -181,7 +195,6 @@ public class MotoristaService {
             firstDigit = 0;
         }
 
-        // Cálculo do segundo dígito verificador
         sum = 0;
         for (int i = 0, weight = 11; i < 10; i++, weight--) {
             sum += numbers[i] * weight;
