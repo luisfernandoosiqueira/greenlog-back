@@ -24,7 +24,7 @@ public final class RotaFactory {
 
         double distanciaTotal = 0.0;
         List<TrechoRota> trechos = new ArrayList<>();
-
+        // Cria a entidade Rota
         Rota rota = new Rota(
                 nome,
                 tipoResiduo,
@@ -33,7 +33,7 @@ public final class RotaFactory {
                 pesoTotal,
                 0.0
         );
-
+        // Monta lista de TrechoRota a partir dos caminhos por trecho
         for (List<RuaConexao> caminho : caminhosPorTrecho) {
             if (caminho == null || caminho.isEmpty()) {
                 continue;
@@ -48,7 +48,7 @@ public final class RotaFactory {
             TrechoRota trecho = new TrechoRota(rota, origem, destino);
             trecho.setRuas(caminho);
             trechos.add(trecho);
-
+         // soma distâncias das conexões deste trecho
             for (RuaConexao rc : caminho) {
                 if (rc.getDistanciaKm() != null) {
                     distanciaTotal += rc.getDistanciaKm();
