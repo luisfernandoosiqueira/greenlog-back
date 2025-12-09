@@ -5,7 +5,7 @@ import app.dto.caminhao.CaminhaoResponseDTO;
 import app.dto.motorista.MotoristaResponseDTO;
 import app.entity.Caminhao;
 import app.entity.Motorista;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,9 +25,9 @@ public class CaminhaoMapper {
         }
 
         Caminhao caminhao = new Caminhao();
+        caminhao.setPlaca(dto.placa());
         caminhao.setStatus(dto.status());
         caminhao.setCapacidadeKg(dto.capacidadeKg());
-        // placa, motorista e tipos de resíduo serão definidos no service
         return caminhao;
     }
 
@@ -41,9 +41,8 @@ public class CaminhaoMapper {
                 ? motoristaMapper.toResponseDTO(motorista)
                 : null;
 
-        List<Long> tiposIds = caminhao.getTiposResiduo()
+        List<TipoResiduo> tiposResiduos = caminhao.getTiposResiduo()
                 .stream()
-                .map(TipoResiduoModel::getId)
                 .toList();
 
         return new CaminhaoResponseDTO(
@@ -51,7 +50,7 @@ public class CaminhaoMapper {
                 motoristaDTO,
                 caminhao.getCapacidadeKg(),
                 caminhao.getStatus(),
-                tiposIds
+                tiposResiduos
         );
     }
 }

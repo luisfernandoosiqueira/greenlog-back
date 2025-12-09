@@ -1,6 +1,8 @@
 package app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -17,6 +19,7 @@ public class Bairro {
     private String nome;
 
     @OneToMany(mappedBy = "bairro", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<PontoColeta> pontosColeta = new HashSet<>();
 
     public Bairro() {

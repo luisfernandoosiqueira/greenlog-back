@@ -4,7 +4,7 @@ import app.dto.pontocoleta.PontoColetaRequestDTO;
 import app.dto.pontocoleta.PontoColetaResponseDTO;
 import app.entity.Bairro;
 import app.entity.PontoColeta;
-import app.entity.TipoResiduoModel;
+import app.enums.TipoResiduo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,9 +23,9 @@ public class PontoColetaMapper {
         ponto.setTelefone(dto.telefone());
         ponto.setEmail(dto.email());
         ponto.setEndereco(dto.endereco());
-        ponto.setHorarioFuncionamento(dto.horarioFuncionamento());
+        ponto.setHoraEntrada(dto.horaEntrada());
+        ponto.setHoraSaida(dto.horaSaida());
         ponto.setQuantidadeResiduosKg(dto.quantidadeResiduosKg());
-        // bairro e tipos de resíduo serão ajustados no service
         return ponto;
     }
 
@@ -36,25 +36,23 @@ public class PontoColetaMapper {
 
         Bairro bairro = ponto.getBairro();
         Long bairroId = bairro != null ? bairro.getId() : null;
-        String bairroNome = bairro != null ? bairro.getNome() : null;
 
-        List<Long> tiposIds = ponto.getTiposResiduo()
+        List<TipoResiduo> tiposResiduos = ponto.getTiposResiduo()
                 .stream()
-                .map(TipoResiduoModel::getId)
                 .toList();
 
         return new PontoColetaResponseDTO(
                 ponto.getId(),
                 bairroId,
-                bairroNome,
                 ponto.getNome(),
                 ponto.getResponsavel(),
                 ponto.getTelefone(),
                 ponto.getEmail(),
                 ponto.getEndereco(),
-                ponto.getHorarioFuncionamento(),
+                ponto.getHoraEntrada(),
+                ponto.getHoraSaida(),
                 ponto.getQuantidadeResiduosKg(),
-                tiposIds
+                tiposResiduos
         );
     }
 }
