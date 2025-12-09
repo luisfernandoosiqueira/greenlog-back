@@ -66,17 +66,21 @@ public class DijkstraService implements CalculadoraRotaAdapter {
         if (bairrosIds == null || bairrosIds.isEmpty()) {
             throw new NegocioException("A lista de bairros não pode ser vazia.");
         }
+        List<Long> bairrosIdsAtualizado = new ArrayList<>();
         if (bairrosIds.size() == 1) {
-            // ida e volta para o mesmo ponto
             Long unico = bairrosIds.get(0);
-            return List.of(unico, unico);
+            return List.of(1L, unico, 1L);
+        } else {
+            bairrosIdsAtualizado.add(1L);               // começo
+            bairrosIdsAtualizado.addAll(bairrosIds);    // todos os bairros na ordem
         }
 
-        Long inicio = bairrosIds.get(0);
+
+        Long inicio = bairrosIdsAtualizado.get(0);
         Long atual = inicio;
 
         // mantém a ordem de inserção, mas permite remoção
-        Set<Long> restantes = new LinkedHashSet<>(bairrosIds.subList(1, bairrosIds.size()));
+        Set<Long> restantes = new LinkedHashSet<>(bairrosIdsAtualizado.subList(1, bairrosIdsAtualizado.size()));
 
         List<Long> percurso = new ArrayList<>();
         percurso.add(inicio);
